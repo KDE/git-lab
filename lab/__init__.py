@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# SPDX-FileCopyrightText: 2020 Jonah Brüchert <jbb@kaidan.im>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 import argparse
 
 import os

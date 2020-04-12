@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 Jonah Brüchert <jbb@kaidan.im>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from lab.repositoryconnection import RepositoryConnection
 from gitlab.v4.objects import ProjectMergeRequest
 

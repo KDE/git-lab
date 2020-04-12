@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 Jonah Brüchert <jbb@kaidan.im>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from urllib.parse import ParseResult, urlparse, quote_plus
 from enum import IntEnum, auto
 
