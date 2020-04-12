@@ -96,7 +96,14 @@ class RepositoryConnection:
             exit(1)
 
         repository: str = next(origin.urls)
+
         repository_url: ParseResult = urlparse(repository)
+
+        if (repository_url.scheme != "https" or repository_url.scheme != "http"):
+            print("Error: git lab only supports https and http urls for the origin remote currently")
+            print("The url \"{}\" cannot be used".format(repository))
+            exit(1)
+
         if (not repository_url.scheme and repository_url.hostname):
             print("Error: Failed to detect GitLab instance url")
             exit(1)
