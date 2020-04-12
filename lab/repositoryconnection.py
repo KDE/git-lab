@@ -5,6 +5,7 @@ from git import Repo
 
 from urllib.parse import ParseResult, urlparse, quote_plus
 from lab.utils import Utils
+from lab.config import Config
 
 import os
 
@@ -17,6 +18,7 @@ class RepositoryConnection:
     __local_repo: Repo
     __remote_project: Project
     __gitlab_token: str
+    __config: Config = Config()
 
     def __init__(self) -> None:
         self.__local_repo: Repo = Repo(os.getcwd())
@@ -42,7 +44,11 @@ class RepositoryConnection:
 
         gitlab_url = str(repository_url.scheme) + "://" + str(repository_url.hostname)
 
-        self.__login(gitlab_url, os.environ.get("GITLAB_TOKEN"))
+        if (self.__config.token(repository_url.hostname) == "" or not self.__config.token(repository_url.hostname)):
+            print("No authentication token found. You need to use \"git lab login --host {}\" first".format(repository_url.hostname))
+            exit(1)
+
+        self.__login(gitlab_url, self.__config.token(repository_url.hostname))
         if (not self.__connection):
             print("Error: Failed to connect to GitLab")
             exit(0)
@@ -55,7 +61,7 @@ class RepositoryConnection:
             self.__gitlab_token = token
             self.__connection.auth()
         except GitlabAuthenticationError:
-            print("Error: Could not log into GitLab, check your API Tokein in the GITLAB_TOKEN environment variable")
+            print("Error: Could not log into GitLab")
             exit(1)
 
     """
