@@ -138,8 +138,8 @@ class MergeRequestCheckout(RepositoryConnection):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='The arcanist of GitLab.')
     subparsers: argparse._SubParsersAction = parser.add_subparsers(dest="subcommand")
-    parser_diff = subparsers.add_parser("diff")
-    parser_patch = subparsers.add_parser("patch")
+    parser_diff = subparsers.add_parser("diff", help="Create a new merge request for the current branch")
+    parser_patch = subparsers.add_parser("patch", help="check out a remote merge request")
 
     parser_patch.add_argument(
         "number", metavar="int", type=int,
@@ -154,3 +154,5 @@ if __name__ == "__main__":
     elif (args.subcommand == "patch"):
         checkouter: MergeRequestCheckout = MergeRequestCheckout()
         checkouter.checkout(args.number[0])
+    else:
+        parser.print_help()
