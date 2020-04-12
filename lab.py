@@ -179,7 +179,7 @@ class MergeRequestCreator(RepositoryConnection):
             })
         except GitlabCreateError as e:
             if (e.response_code == 409):
-                print("Info: Merge request already exists, updating")
+                print("Info: Merge request already exists")
 
 class MergeRequestCheckout(RepositoryConnection):
     # private
