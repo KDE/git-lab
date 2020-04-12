@@ -33,13 +33,14 @@ class MergeRequestCreator(RepositoryConnection):
         e_input = EditorInput()
 
         try:
-            self.__remote_fork.mergerequests.create({
+            mr = self.__remote_fork.mergerequests.create({
                 "source_branch": self.local_repo().active_branch.name,
                 "target_branch": "master",
                 "title": e_input.title,
                 "description": e_input.body,
                 "target_project_id": self.remote_project().id
             })
+            print("Info: Created merge request at", mr.web_url)
         except GitlabCreateError as e:
             if (e.response_code == 409):
                 print("Info: Merge request already exists")
