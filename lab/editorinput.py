@@ -39,7 +39,7 @@ class EditorInput:
         return True
 
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.__input()
         if (not self.__fulltext_valid()):
             print("Text not valid, aborting")

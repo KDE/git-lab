@@ -11,7 +11,7 @@ from lab.mergerequestcreator import MergeRequestCreator
 from lab.mergerequestcheckout import MergeRequestCheckout
 from lab.config import Config
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description='The arcanist of GitLab.')
     subparsers: argparse._SubParsersAction = parser.add_subparsers(dest="subcommand")
     parser_diff = subparsers.add_parser("diff", help="Create a new merge request for the current branch")

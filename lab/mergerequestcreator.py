@@ -34,7 +34,7 @@ class MergeRequestCreator(RepositoryConnection):
 
         try:
             self.__remote_fork.mergerequests.create({
-                "source_branch": str(self.local_repo().active_branch),
+                "source_branch": self.local_repo().active_branch.name,
                 "target_branch": "master",
                 "title": e_input.title,
                 "description": e_input.body,

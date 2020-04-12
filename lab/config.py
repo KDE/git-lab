@@ -2,15 +2,15 @@ import json
 import os
 from pathlib import Path
 
-from typing import TextIO, Dict, Any
+from typing import TextIO, Dict, Any, Optional
 
 CONFIG_PATH = os.path.expanduser("~") + "/.gitlabconfig"
 
 class Config:
     __file: TextIO
-    __config: Dict[str, Any]
+    __config: Dict[str, str]
 
-    def __init__(self):
+    def __init__(self) -> None:
         if (not os.path.isfile(CONFIG_PATH)):
             file = open(CONFIG_PATH, "w+")
             json.dump({}, file)
@@ -19,17 +19,17 @@ class Config:
         self.__file = open(CONFIG_PATH, "r+")
         self.__config = json.load(self.__file)
 
-    def save(self):
+    def save(self) -> None:
         self.__file.seek(0)
         json.dump(self.__config, self.__file, indent=4)
         self.__file.truncate()
         self.__file.close()
 
-    def token(self, instance: str) -> str:
+    def token(self, instance: str) -> Optional[str]:
         try:
             return self.__config[instance]
         except KeyError:
-            self.__config[instance] = str()
+            return None
 
     def set_token(self, instance: str, token: str) -> None:
         self.__config[instance] = token

@@ -6,10 +6,10 @@ class MergeRequestCheckout(RepositoryConnection):
     # private
     __mr: ProjectMergeRequest
 
-    def __init__(self):
+    def __init__(self) -> None:
         RepositoryConnection.__init__(self)
 
-    def checkout(self, id: int):
+    def checkout(self, id: int) -> None:
         self.__mr = self.remote_project().mergerequests.get(id, lazy=False)
         print("Checking out merge request \"{}\"...".format(self.__mr.title))
         print("  branch:", self.__mr.source_branch)

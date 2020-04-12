@@ -9,6 +9,8 @@ from lab.config import Config
 
 import os
 
+from typing import Optional
+
 """
 Creates a connection to the gitlab instance used by the current repository
 """
@@ -38,17 +40,18 @@ class RepositoryConnection:
             print("The url \"{}\" cannot be used".format(repository))
             exit(1)
 
-        if (not repository_url.scheme and repository_url.hostname):
+        if (not repository_url.scheme or not repository_url.hostname):
             print("Error: Failed to detect GitLab instance url")
             exit(1)
 
-        gitlab_url = str(repository_url.scheme) + "://" + str(repository_url.hostname)
+        gitlab_url = repository_url.scheme + "://" + repository_url.hostname
 
-        if (self.__config.token(repository_url.hostname) == "" or not self.__config.token(repository_url.hostname)):
+        auth_token: Optional[str] = self.__config.token(repository_url.hostname)
+        if (not auth_token):
             print("No authentication token found. You need to use \"git lab login --host {}\" first".format(repository_url.hostname))
             exit(1)
 
-        self.__login(gitlab_url, self.__config.token(repository_url.hostname))
+        self.__login(gitlab_url, auth_token)
         if (not self.__connection):
             print("Error: Failed to connect to GitLab")
             exit(0)
