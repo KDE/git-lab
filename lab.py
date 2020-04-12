@@ -99,7 +99,7 @@ class RepositoryConnection:
 
         repository_url: ParseResult = urlparse(repository)
 
-        if (repository_url.scheme != "https" or repository_url.scheme != "http"):
+        if not (repository_url.scheme == "https" or repository_url.scheme == "http"):
             print("Error: git lab only supports https and http urls for the origin remote currently")
             print("The url \"{}\" cannot be used".format(repository))
             exit(1)
@@ -161,19 +161,19 @@ class MergeRequestCreator(RepositoryConnection):
             id: str = Utils.str_id_for_url(self.local_repo().remotes.fork.url)
             self.__remote_fork = self.connection().projects.get(id)
 
-        print(self.__remote_fork)
+        assert self.__remote_fork
 
     def push(self) -> None:
         self.local_repo().remotes.fork.push()
 
     def create_mr(self) -> None:
-        einput = EditorInput()
+        e_input = EditorInput()
 
         mr = self.__remote_fork.mergerequests.create({
             "source_branch": str(self.local_repo().active_branch),
             "target_branch": "master",
-            "title": einput.title,
-            "description": einput.body,
+            "title": e_input.title,
+            "description": e_input.body,
             "target_project_id": self.remote_project().id
         })
 
