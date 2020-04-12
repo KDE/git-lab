@@ -97,17 +97,17 @@ class MergeRequestCreator(RepositoryConnection):
 
     def fork(self) -> None:
         try:
-            self.__remote_fork = self.__remote_project.forks.create({})
+            self.__remote_fork = self.remote_project().forks.create({})
             self.local_repo().create_remote("fork", url=self.__remote_fork.http_url_to_repo)
         except GitlabCreateError:
             print("Info: Fork already exists, continueing")
-            id: str = Utils.str_id_for_url(self.__local_repo.remotes.fork.url)
+            id: str = Utils.str_id_for_url(self.local_repo().remotes.fork.url)
             self.__remote_fork = self.connection().projects.get(id)
 
         print(self.__remote_fork)
 
     def push(self) -> None:
-        self.__local_repo.remotes.fork.push()
+        self.local_repo().remotes.fork.push()
 
     def create_mr(self) -> None:
         mr = self.__remote_fork.mergerequests.create({
