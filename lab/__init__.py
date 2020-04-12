@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
 
-from gitlab import Gitlab
-from gitlab.v4.objects import Project, ProjectMergeRequest
-from gitlab.exceptions import GitlabCreateError, GitlabAuthenticationError
-from git import Repo
-
-from urllib.parse import urlparse, ParseResult, quote_plus
 import argparse
 
 import os
