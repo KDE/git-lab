@@ -37,7 +37,7 @@ class RepositoryConnection:
 
         if not (repository_url.scheme == "https" or repository_url.scheme == "http"):
             Utils.log(Utils.LogType.Error, "git lab only supports https and http urls for the origin remote currently")
-            print("The url \"{}\" cannot be used".format(repository))
+            print("       The url \"{}\" cannot be used".format(repository))
             exit(1)
 
         if (not repository_url.scheme or not repository_url.hostname):
