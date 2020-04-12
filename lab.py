@@ -169,13 +169,17 @@ class MergeRequestCreator(RepositoryConnection):
     def create_mr(self) -> None:
         e_input = EditorInput()
 
-        mr = self.__remote_fork.mergerequests.create({
-            "source_branch": str(self.local_repo().active_branch),
-            "target_branch": "master",
-            "title": e_input.title,
-            "description": e_input.body,
-            "target_project_id": self.remote_project().id
-        })
+        try:
+            self.__remote_fork.mergerequests.create({
+                "source_branch": str(self.local_repo().active_branch),
+                "target_branch": "master",
+                "title": e_input.title,
+                "description": e_input.body,
+                "target_project_id": self.remote_project().id
+            })
+        except GitlabCreateError as e:
+            if (e.response_code == 409):
+                print("Info: Merge request already exists, updating")
 
 class MergeRequestCheckout(RepositoryConnection):
     # private
