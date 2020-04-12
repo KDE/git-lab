@@ -28,7 +28,7 @@ class RepositoryConnection:
         try:
             origin = self.__local_repo.remote(name="origin")
         except ValueError:
-            print("Error: No origin remote exists")
+            Utils.log(Utils.LogType.Error, "No origin remote exists")
             exit(1)
 
         repository: str = next(origin.urls)
@@ -36,12 +36,12 @@ class RepositoryConnection:
         repository_url: ParseResult = urlparse(repository)
 
         if not (repository_url.scheme == "https" or repository_url.scheme == "http"):
-            print("Error: git lab only supports https and http urls for the origin remote currently")
+            Utils.log(Utils.LogType.Error, "git lab only supports https and http urls for the origin remote currently")
             print("The url \"{}\" cannot be used".format(repository))
             exit(1)
 
         if (not repository_url.scheme or not repository_url.hostname):
-            print("Error: Failed to detect GitLab instance url")
+            Utils.log(Utils.LogType.Error, "Failed to detect GitLab instance url")
             exit(1)
 
         gitlab_url = repository_url.scheme + "://" + repository_url.hostname
@@ -53,7 +53,7 @@ class RepositoryConnection:
 
         self.__login(gitlab_url, auth_token)
         if (not self.__connection):
-            print("Error: Failed to connect to GitLab")
+            Utils.log(Utils.LogType.Error, "Failed to connect to GitLab")
             exit(0)
 
         self.__remote_project = self.__connection.projects.get(Utils.str_id_for_url(repository))
@@ -64,7 +64,7 @@ class RepositoryConnection:
             self.__gitlab_token = token
             self.__connection.auth()
         except GitlabAuthenticationError:
-            print("Error: Could not log into GitLab")
+            Utils.log(Utils.LogType.Error, "Could not log into GitLab")
             exit(1)
 
     """

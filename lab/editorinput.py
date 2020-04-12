@@ -3,6 +3,8 @@ import tempfile
 
 from typing import List
 
+from lab.utils import Utils
+
 """
 Structure representing the editorinput.
 """
@@ -22,16 +24,16 @@ class EditorInput:
 
         try:
             if (lines[0] == ""):
-                print("Error: The first line (title) can't be empty")
+                Utils.log(Utils.LogType.Error, "The first line (title) can't be empty")
                 return False
         except IndexError:
-            print("Error: The first line (title) can't be empty")
+            Utils.log(Utils.LogType.Error, "The first line (title) can't be empty")
             return False
 
         # Anything after the title is optional, so the index might not exist
         try:
             if (lines[1] != ""):
-                print("Error: The second line (separator) must be empty")
+                Utils.log(Utils.LogType.Error, "The second line (separator) must be empty")
                 return False
         except IndexError:
             return True
@@ -42,7 +44,7 @@ class EditorInput:
     def __init__(self) -> None:
         self.__input()
         if (not self.__fulltext_valid()):
-            print("Text not valid, aborting")
+            Utils.log(Utils.LogType.Error, "Text not valid, aborting")
             exit(1)
 
         lines: List[str] = self.__fulltext.splitlines()

@@ -20,7 +20,7 @@ class MergeRequestCreator(RepositoryConnection):
             self.__remote_fork = self.remote_project().forks.create({})
             self.local_repo().create_remote("fork", url=self.__remote_fork.http_url_to_repo)
         except GitlabCreateError:
-            print("Info: Fork already exists, continueing")
+            Utils.log(Utils.LogType.Info, "Fork already exists, continueing")
             id: str = Utils.str_id_for_url(self.local_repo().remotes.fork.url)
             self.__remote_fork = self.connection().projects.get(id)
 
@@ -40,7 +40,7 @@ class MergeRequestCreator(RepositoryConnection):
                 "description": e_input.body,
                 "target_project_id": self.remote_project().id
             })
-            print("Info: Created merge request at", mr.web_url)
+            Utils.log(Utils.LogType.Info, "Created merge request at", mr.web_url)
         except GitlabCreateError as e:
             if (e.response_code == 409):
-                print("Info: Merge request already exists")
+                Utils.log(Utils.LogType.Info, "Merge request already exists")
