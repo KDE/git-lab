@@ -7,11 +7,30 @@ from git import Repo
 
 from urllib.parse import urlparse, ParseResult, quote_plus
 import argparse
+import tempfile
+import subprocess
 
 import os
 import sys
 
-from typing import List
+"""
+Structure representing the editorinput.
+Should not be used directly
+"""
+class EditorInput:
+    title: str
+    body: str
+
+    def __init__(self):
+        file = tempfile.NamedTemporaryFile("r")
+        subprocess.call(["editor", file.name])
+
+        text: str = file.read()
+        lines = text.splitlines()
+
+        self.title = lines[0]
+        self.body = "\n".join(lines[1:])
+
 
 """
 This class contains static methods for common tasks
@@ -110,10 +129,13 @@ class MergeRequestCreator(RepositoryConnection):
         self.local_repo().remotes.fork.push()
 
     def create_mr(self) -> None:
+        einput = EditorInput()
+
         mr = self.__remote_fork.mergerequests.create({
-            'source_branch': str(self.local_repo().active_branch),
-            'target_branch': 'master',
-            'title': 'merge cool feature',
+            "source_branch": str(self.local_repo().active_branch),
+            "target_branch": "master",
+            "title": einput.title,
+            "description": einput.body,
             "target_project_id": self.remote_project().id
         })
 
@@ -126,7 +148,6 @@ class MergeRequestCheckout(RepositoryConnection):
 
     def checkout(self, id: int):
         self.__mr = self.remote_project().mergerequests.get(id, lazy=False)
-        #print(self.__mr)
         print("Checking out merge request \"{}\"...".format(self.__mr.title))
         print("  branch:", self.__mr.source_branch)
 
