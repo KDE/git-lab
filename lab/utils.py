@@ -22,10 +22,13 @@ class Utils:
     def log(type: LogType, *message: str) -> None:
         prefix = ""
         if (type == Utils.LogType.Info):
-            prefix = "Info:"
+            prefix = "Info"
         elif (type == Utils.LogType.Warning):
-            prefix = "Warning:"
+            prefix = "Warning"
         elif (type == Utils.LogType.Error):
             prefix = "Error"
+
+        if (len(prefix) > 0):
+            prefix += ":"
 
         print(prefix, *message)
