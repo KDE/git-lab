@@ -5,7 +5,6 @@ from typing import List
 
 """
 Structure representing the editorinput.
-Should not be used directly
 """
 class EditorInput:
     __fulltext: str = "\n"
