@@ -2,20 +2,41 @@
 
 Subcommand for git providing an arcanist-style interface to GitLab.
 
-## Workflow 
+## Workflow
 
-### For creating a merge request
+### Logging in
+
+```
+git lab login --host invent.kde.org --token ${YOUR_PRIVATE_TOKEN}
+```
+
+### Creating a merge request
 
 ```
 git checkout -b feature
 ```
-Do changes
+
+Do your changes
+
 ```
 git commit -m "Commit message"
 git lab diff
 ```
 
-### For testing a merge request
+### Listing merge requests
+
+* Merge requests for the current repository
+
+```
+git lab list --project
+```
+
+* Merge requests for the current GitLab instance (detected from the repository)
+```
+git lab list
+```
+
+### Testing a merge request
 
 ```
 git lab patch ${NUMBER}
