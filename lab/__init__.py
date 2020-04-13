@@ -10,17 +10,10 @@ Base module for the lab package
 
 import argparse
 
-import os
-import sys
-
-from typing import List
-
 from lab.mergerequestcreator import MergeRequestCreator
 from lab.mergerequestcheckout import MergeRequestCheckout
-from lab.repositoryconnection import RepositoryConnection
 from lab.mergerequestlist import MergeRequestList
 from lab.config import Config
-from lab.utils import Utils
 
 
 def main() -> None:

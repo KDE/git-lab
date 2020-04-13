@@ -6,6 +6,8 @@ Module containing classes for checking out merge requests
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import sys
+
 from gitlab.v4.objects import ProjectMergeRequest
 
 from lab.repositoryconnection import RepositoryConnection
@@ -33,5 +35,19 @@ class MergeRequestCheckout(RepositoryConnection):
         fetch_info = self.local_repo().remotes.origin.fetch(
             "merge-requests/{}/head".format(merge_request_id)
         )[0]
+        if self.__mr.source_branch in self.local_repo().refs:
+            # Make sure not to overwrite local changes
+            answer: str = input(
+                'Branch "{}" already exists locally, do you want to overwrite it? (y/n)\n'.format(
+                    self.__mr.source_branch
+                )
+            )
+            if answer != "y":
+                print("Aborting")
+                sys.exit(1)
+
+            self.local_repo().refs.master.checkout()
+            self.local_repo().delete_head(self.__mr.source_branch, "-f")
+
         head = self.local_repo().create_head(self.__mr.source_branch, fetch_info.ref)
         head.checkout()
