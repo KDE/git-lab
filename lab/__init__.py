@@ -29,9 +29,7 @@ def main() -> None:
     """
     parser = argparse.ArgumentParser(description="The arcanist of GitLab.")
     subparsers = parser.add_subparsers(dest="subcommand")
-    subparsers.add_parser(
-        "diff", help="Create a new merge request for the current branch"
-    )
+    subparsers.add_parser("diff", help="Create a new merge request for the current branch")
     parser_patch = subparsers.add_parser("patch", help="check out a remote merge request")
     parser_login = subparsers.add_parser("login", help="Save a token for a GitLab token")
     parser_list = subparsers.add_parser("list", help="List open merge requests")

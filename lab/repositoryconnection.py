@@ -64,10 +64,8 @@ class RepositoryConnection:
         auth_token: Optional[str] = self.__config.token(repository_url.hostname)
         if not auth_token:
             print(
-                "No authentication token found. You need to use \"git lab login --host {}\" first"
-                .format(
-                    repository_url.hostname
-                )
+                "No authentication token found. "
+                + 'You need to use "git lab login --host {}" first'.format(repository_url.hostname)
             )
             sys.exit(1)
 

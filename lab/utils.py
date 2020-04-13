@@ -24,7 +24,7 @@ class Utils:
         Warning = auto()
         Error = auto()
 
-    class TextFormatting: # pylint: disable=too-few-public-methods
+    class TextFormatting:  # pylint: disable=too-few-public-methods
         """
         Structure containing constants for working with text formatting
         """

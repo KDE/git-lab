@@ -16,7 +16,7 @@ from typing import List
 from lab.utils import Utils
 
 
-class EditorInput: # pylint: disable=too-few-public-methods
+class EditorInput:  # pylint: disable=too-few-public-methods
     """
     Structure representing the editorinput.
     """
