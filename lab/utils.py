@@ -1,3 +1,7 @@
+"""
+Module containing classes for common tasks
+"""
+
 # SPDX-FileCopyrightText: 2020 Jonah Brüchert <jbb@kaidan.im>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
@@ -5,16 +9,26 @@
 from urllib.parse import ParseResult, urlparse, quote_plus
 from enum import IntEnum, auto
 
-"""
-This class contains static methods for common tasks
-"""
+
 class Utils:
+    """
+    This class contains static methods for common tasks
+    """
+
     class LogType(IntEnum):
+        """
+        Enum representing the type of log message
+        """
+
         Info = auto()
         Warning = auto()
         Error = auto()
 
-    class TextFormatting:
+    class TextFormatting: # pylint: disable=too-few-public-methods
+        """
+        Structure containing constants for working with text formatting
+        """
+
         purple: str = "\033[0;95m"
         cyan: str = "\033[0;36m"
         darkcyan: str = "\033[0;96m"
@@ -27,27 +41,30 @@ class Utils:
         underline: str = "\033[4m"
         end: str = "\033[0m"
 
-    """
-    Returns the url encoded string id for a repository
-    """
     @staticmethod
     def str_id_for_url(url: str) -> str:
+        """
+        Returns the url encoded string id for a repository
+        """
         repository_url: ParseResult = urlparse(url.replace(".git", ""))
         return quote_plus(repository_url.path[1:])
 
     @staticmethod
-    def log(type: LogType, *message: str) -> None:
+    def log(log_type: LogType, *message: str) -> None:
+        """
+        Prints a message in a colorful and consistent way
+        """
         prefix = Utils.TextFormatting.bold
-        if (type == Utils.LogType.Info):
+        if log_type == Utils.LogType.Info:
             prefix += "Info"
-        elif (type == Utils.LogType.Warning):
+        elif log_type == Utils.LogType.Warning:
             prefix += Utils.TextFormatting.yellow + "Warning" + Utils.TextFormatting.end
-        elif (type == Utils.LogType.Error):
+        elif log_type == Utils.LogType.Error:
             prefix += Utils.TextFormatting.red + "Error" + Utils.TextFormatting.end
 
         prefix += Utils.TextFormatting.end
 
-        if (len(prefix) > 0):
+        if len(prefix) > 0:
             prefix += ":"
 
         print(prefix, *message)

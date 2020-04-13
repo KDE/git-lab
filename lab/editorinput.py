@@ -1,3 +1,7 @@
+"""
+Module containing classes for getting user input using an editor
+"""
+
 # SPDX-FileCopyrightText: 2020 Jonah Brüchert <jbb@kaidan.im>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
@@ -5,14 +9,18 @@
 import subprocess
 import tempfile
 
+import sys
+
 from typing import List
 
 from lab.utils import Utils
 
-"""
-Structure representing the editorinput.
-"""
-class EditorInput:
+
+class EditorInput: # pylint: disable=too-few-public-methods
+    """
+    Structure representing the editorinput.
+    """
+
     __fulltext: str = "\n"
     title: str
     body: str
@@ -24,7 +32,7 @@ class EditorInput:
             if line.startswith("#"):
                 continue
 
-            newtext += (line + "\n")
+            newtext += line + "\n"
 
         self.__fulltext = newtext
 
@@ -48,7 +56,7 @@ class EditorInput:
         lines = self.__fulltext.splitlines()
 
         try:
-            if (lines[0] == ""):
+            if lines[0] == "":
                 Utils.log(Utils.LogType.Error, "The first line (title) can't be empty")
                 return False
         except IndexError:
@@ -57,13 +65,12 @@ class EditorInput:
 
         return True
 
-
     def __init__(self) -> None:
         self.__input()
         self.__fulltext_remove_comments()
-        if (not self.__fulltext_valid()):
+        if not self.__fulltext_valid():
             Utils.log(Utils.LogType.Error, "Text not valid, aborting")
-            exit(1)
+            sys.exit(1)
 
         lines: List[str] = self.__fulltext.splitlines()
         self.title = lines[0]

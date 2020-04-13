@@ -1,24 +1,32 @@
+"""
+Base class for creating a connection to the GitLab instance used by the repository in pwd
+"""
+
 # SPDX-FileCopyrightText: 2020 Jonah Brüchert <jbb@kaidan.im>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-from gitlab import Gitlab
-from gitlab.v4.objects import Project
-from gitlab.exceptions import GitlabCreateError, GitlabAuthenticationError
-from git import Repo
-
-from urllib.parse import ParseResult, urlparse, quote_plus
-from lab.utils import Utils
-from lab.config import Config
-
 import os
+import sys
 
 from typing import Optional
 
-"""
-Creates a connection to the gitlab instance used by the current repository
-"""
+from urllib.parse import ParseResult, urlparse
+
+from gitlab import Gitlab
+from gitlab.v4.objects import Project
+from gitlab.exceptions import GitlabAuthenticationError
+from git import Repo
+
+from lab.utils import Utils
+from lab.config import Config
+
+
 class RepositoryConnection:
+    """
+    Creates a connection to the gitlab instance used by the current repository
+    """
+
     # private
     __connection: Gitlab
     __local_repo: Repo
@@ -33,32 +41,40 @@ class RepositoryConnection:
             origin = self.__local_repo.remote(name="origin")
         except ValueError:
             Utils.log(Utils.LogType.Error, "No origin remote exists")
-            exit(1)
+            sys.exit(1)
 
         repository: str = next(origin.urls)
 
         repository_url: ParseResult = urlparse(repository)
 
         if not (repository_url.scheme == "https" or repository_url.scheme == "http"):
-            Utils.log(Utils.LogType.Error, "git lab only supports https and http urls for the origin remote currently")
-            print("       The url \"{}\" cannot be used".format(repository))
-            exit(1)
+            Utils.log(
+                Utils.LogType.Error,
+                "git lab only supports https and http urls for the origin remote currently",
+            )
+            print('       The url "{}" cannot be used'.format(repository))
+            sys.exit(1)
 
-        if (not repository_url.scheme or not repository_url.hostname):
+        if not repository_url.scheme or not repository_url.hostname:
             Utils.log(Utils.LogType.Error, "Failed to detect GitLab instance url")
-            exit(1)
+            sys.exit(1)
 
         gitlab_url = repository_url.scheme + "://" + repository_url.hostname
 
         auth_token: Optional[str] = self.__config.token(repository_url.hostname)
-        if (not auth_token):
-            print("No authentication token found. You need to use \"git lab login --host {}\" first".format(repository_url.hostname))
-            exit(1)
+        if not auth_token:
+            print(
+                "No authentication token found. You need to use \"git lab login --host {}\" first"
+                .format(
+                    repository_url.hostname
+                )
+            )
+            sys.exit(1)
 
         self.__login(gitlab_url, auth_token)
-        if (not self.__connection):
+        if not self.__connection:
             Utils.log(Utils.LogType.Error, "Failed to connect to GitLab")
-            exit(0)
+            sys.exit(0)
 
         self.__remote_project = self.__connection.projects.get(Utils.str_id_for_url(repository))
 
@@ -69,22 +85,22 @@ class RepositoryConnection:
             self.__connection.auth()
         except GitlabAuthenticationError:
             Utils.log(Utils.LogType.Error, "Could not log into GitLab")
-            exit(1)
+            sys.exit(1)
 
-    """
-    Returns the Gitlab connection
-    """
     def connection(self) -> Gitlab:
+        """
+        Returns the Gitlab connection
+        """
         return self.__connection
 
-    """
-    Returns the local repository
-    """
     def local_repo(self) -> Repo:
+        """
+        Returns the local repository
+        """
         return self.__local_repo
 
-    """
-    Returns the remote project (for the origin remote)
-    """
     def remote_project(self) -> Project:
+        """
+        Returns the remote project (for the origin remote)
+        """
         return self.__remote_project
