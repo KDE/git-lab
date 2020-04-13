@@ -17,7 +17,7 @@ class Utils:
     class TextFormatting:
         purple: str = "\033[0;95m"
         cyan: str = "\033[0;36m"
-        darkcyan: str = "\033[0;36m"
+        darkcyan: str = "\033[0;96m"
         blue: str = "\033[0;34m"
         green: str = "\033[0;32m"
         yellow: str = "\033[0;33m"

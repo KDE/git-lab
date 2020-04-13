@@ -8,5 +8,6 @@ setup(
         "console_scripts": [
             "git-lab = lab:main",
         ]
-    }
+    },
+    install_requires=open("requirements.txt").readlines()
 )

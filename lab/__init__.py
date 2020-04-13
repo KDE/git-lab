@@ -13,7 +13,10 @@ from typing import List
 
 from lab.mergerequestcreator import MergeRequestCreator
 from lab.mergerequestcheckout import MergeRequestCheckout
+from lab.repositoryconnection import RepositoryConnection
+from lab.mergerequestlist import MergeRequestList
 from lab.config import Config
+from lab.utils import Utils
 
 def main() -> None:
     parser = argparse.ArgumentParser(description='The arcanist of GitLab.')
@@ -21,13 +24,16 @@ def main() -> None:
     parser_diff = subparsers.add_parser("diff", help="Create a new merge request for the current branch")
     parser_patch = subparsers.add_parser("patch", help="check out a remote merge request")
     parser_login = subparsers.add_parser("login", help="Save a token for a GitLab token")
+    parser_list = subparsers.add_parser("list", help="List open merge requests")
 
     parser_patch.add_argument(
         "number", metavar="int", type=int,
         nargs=1, help="Merge request number to checkout")
 
-    parser_login.add_argument("--host", help="GitLab host (e.g invent.kde.org)")
-    parser_login.add_argument("--token", help="GitLab api private token")
+    parser_login.add_argument("--host", help="GitLab host (e.g invent.kde.org)", required=True)
+    parser_login.add_argument("--token", help="GitLab api private token", required=True)
+
+    parser_list.add_argument("--project", help="Show merge requests of the current project, not of the user", action='store_true')
 
     args: argparse.Namespace = parser.parse_args()
     if (args.subcommand == "diff"):
@@ -42,6 +48,9 @@ def main() -> None:
         config: Config = Config()
         config.set_token(args.host, args.token)
         config.save()
+    elif (args.subcommand == "list"):
+        lister = MergeRequestList(args.project)
+        lister.print_formatted_list()
     else:
         parser.print_help()
 
