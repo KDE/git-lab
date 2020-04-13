@@ -42,7 +42,8 @@ class MergeRequestCreator(RepositoryConnection):
                 "target_branch": "master",
                 "title": e_input.title,
                 "description": e_input.body,
-                "target_project_id": self.remote_project().id
+                "target_project_id": self.remote_project().id,
+                "allow_maintainer_to_push": True
             })
             Utils.log(Utils.LogType.Info, "Created merge request at", mr.web_url)
         except GitlabCreateError as e:
