@@ -47,17 +47,23 @@ class Table:
             return 0
 
     def print(self):
-        #print(self.__columns)
+        # Calculate width for each column
+        column_widths: List[int] = []
+        for column in self.__columns:
+            column_widths.append(self.__column_max_width(column))
 
+
+        # Build table
         for y in range(0, Table.__columns_max_len(self.__columns)):
             textbuffer: str = ""
-            for column in self.__columns:
-                #print(column)
-                width = self.__column_max_width(column) # Inefficient
+
+            for x in range(0, len(self.__columns)):
+                column: List[str] = self.__columns[x]
+
                 try:
                     textbuffer += column[y]
-                    textbuffer += (width - len(column[y]) + 2) * " "
+                    textbuffer += (column_widths[x] - len(column[y]) + 2) * " "
                 except IndexError:
-                    textbuffer += (width + 2) * " "
+                    textbuffer += (column_widths[x] + 2) * " "
 
             print(textbuffer)
