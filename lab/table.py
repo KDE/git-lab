@@ -7,14 +7,14 @@ class Table:
     Add a column to the table.
     The column needs to be a list of strings
     """
-    def add_column(self, column: List[str]):
+    def add_column(self, column: List[str]) -> None:
         self.__columns.append(column)
 
     """
     Add a row to the table.
     The row needs to be a list of strings.
     """
-    def add_row(self, row: List[str]):
+    def add_row(self, row: List[str]) -> None:
         columns_len: int = Table.__columns_max_len(self.__columns)
 
         while (len(row) > len(self.__columns)):
@@ -36,7 +36,7 @@ class Table:
         return max(lens)
 
     @staticmethod
-    def __columns_max_len(columns: [List[List[str]]]) -> int:
+    def __columns_max_len(columns: List[List[str]]) -> int:
         lens: List[int] = []
         for column in columns:
             lens.append(len(column))
@@ -46,11 +46,11 @@ class Table:
         except ValueError: # Happens if table is completely empty
             return 0
 
-    def print(self):
+    def print(self) -> None:
         # Calculate width for each column
         column_widths: List[int] = []
-        for column in self.__columns:
-            column_widths.append(self.__column_max_width(column))
+        for col in self.__columns:
+            column_widths.append(self.__column_max_width(col))
 
 
         # Build table

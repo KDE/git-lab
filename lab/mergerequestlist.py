@@ -14,16 +14,16 @@ Lists all merge requests of the current repository
 class MergeRequestList(RepositoryConnection):
     for_project: bool = False
 
-    def __init__(self, for_project: bool):
+    def __init__(self, for_project: bool) -> None:
         RepositoryConnection.__init__(self)
         self.for_project = for_project
 
-    def print_formatted_list(self):
+    def print_formatted_list(self) -> None:
         mrs: List[ProjectMergeRequest] = []
         if (self.for_project):
-            mrs: List[ProjectMergeRequest] = self.remote_project().mergerequests.list()
+            mrs = self.remote_project().mergerequests.list()
         else:
-            mrs: List[ProjectMergeRequest] = self.connection().mergerequests.list()
+            mrs = self.connection().mergerequests.list()
 
         full_refs: List[str] = []
         titles: List[str] = []

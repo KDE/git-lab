@@ -17,7 +17,7 @@ class EditorInput:
     title: str
     body: str
 
-    def __fulltext_remove_comments(self):
+    def __fulltext_remove_comments(self) -> None:
         newtext = ""
 
         for line in self.__fulltext.splitlines():
