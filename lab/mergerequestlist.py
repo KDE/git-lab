@@ -25,22 +25,20 @@ class MergeRequestList(RepositoryConnection):
         else:
             mrs = self.connection().mergerequests.list()
 
-        full_refs: List[str] = []
-        titles: List[str] = []
-        states: List[str] = []
+        t = Table()
+
         for mr in mrs:
-            full_refs.append(Utils.TextFormatting.bold + mr.references["full"] + Utils.TextFormatting.end)
-            titles.append(mr.title)
+            row: List[str] = []
+            row.append(Utils.TextFormatting.bold + mr.references["full"] + Utils.TextFormatting.end)
+            row.append(mr.title)
 
             if (mr.state == "merged"):
-                states.append(Utils.TextFormatting.green + mr.state + Utils.TextFormatting.end)
+                row.append(Utils.TextFormatting.green + mr.state + Utils.TextFormatting.end)
             elif (mr.state == "opened"):
-                states.append(mr.state)
+                row.append(mr.state)
             elif (mr.state == "closed"):
-                states.append(Utils.TextFormatting.red + mr.state + Utils.TextFormatting.end)
+                row.append(Utils.TextFormatting.red + mr.state + Utils.TextFormatting.end)
 
-        t = Table()
-        t.add_column(full_refs)
-        t.add_column(titles)
-        t.add_column(states)
+            t.add_row(row)
+
         t.print()
