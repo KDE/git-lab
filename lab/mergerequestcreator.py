@@ -10,7 +10,7 @@ from gitlab.v4.objects import Project
 from gitlab.exceptions import GitlabCreateError
 
 from lab.repositoryconnection import RepositoryConnection
-from lab.utils import Utils
+from lab.utils import Utils, LogType
 from lab.editorinput import EditorInput
 
 
@@ -37,10 +37,10 @@ class MergeRequestCreator(RepositoryConnection):
             self.local_repo().create_remote("fork", url=self.__remote_fork.http_url_to_repo)
         except GitlabCreateError:
             if "fork" in self.local_repo().remotes:
-                Utils.log(Utils.LogType.Info, "Fork already exists, continueing")
+                Utils.log(LogType.Info, "Fork already exists, continueing")
             else:
                 Utils.log(
-                    Utils.LogType.Info,
+                    LogType.Info,
                     "Fork exists, but no fork remote exists locally, trying to guess the url",
                 )
                 url = self.connection().user.web_url + "/" + self.remote_project().path
@@ -72,7 +72,7 @@ class MergeRequestCreator(RepositoryConnection):
                     "allow_maintainer_to_push": True,
                 }
             )
-            Utils.log(Utils.LogType.Info, "Created merge request at", merge_request.web_url)
+            Utils.log(LogType.Info, "Created merge request at", merge_request.web_url)
         except GitlabCreateError as error:
             if error.response_code == 409:
-                Utils.log(Utils.LogType.Info, "Merge request already exists")
+                Utils.log(LogType.Info, "Merge request already exists")

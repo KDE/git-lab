@@ -13,7 +13,7 @@ import sys
 
 from typing import List
 
-from lab.utils import Utils
+from lab.utils import Utils, LogType
 
 
 class EditorInput:  # pylint: disable=too-few-public-methods
@@ -57,10 +57,10 @@ class EditorInput:  # pylint: disable=too-few-public-methods
 
         try:
             if lines[0] == "":
-                Utils.log(Utils.LogType.Error, "The first line (title) can't be empty")
+                Utils.log(LogType.Error, "The first line (title) can't be empty")
                 return False
         except IndexError:
-            Utils.log(Utils.LogType.Error, "The first line (title) can't be empty")
+            Utils.log(LogType.Error, "The first line (title) can't be empty")
             return False
 
         return True
@@ -69,7 +69,7 @@ class EditorInput:  # pylint: disable=too-few-public-methods
         self.__input()
         self.__fulltext_remove_comments()
         if not self.__fulltext_valid():
-            Utils.log(Utils.LogType.Error, "Text not valid, aborting")
+            Utils.log(LogType.Error, "Text not valid, aborting")
             sys.exit(1)
 
         lines: List[str] = self.__fulltext.splitlines()

@@ -18,7 +18,7 @@ from gitlab.v4.objects import Project
 from gitlab.exceptions import GitlabAuthenticationError
 from git import Repo
 
-from lab.utils import Utils
+from lab.utils import Utils, LogType
 from lab.config import Config
 
 
@@ -40,7 +40,7 @@ class RepositoryConnection:
         try:
             origin = self.__local_repo.remote(name="origin")
         except ValueError:
-            Utils.log(Utils.LogType.Error, "No origin remote exists")
+            Utils.log(LogType.Error, "No origin remote exists")
             sys.exit(1)
 
         repository: str = next(origin.urls)
@@ -49,14 +49,14 @@ class RepositoryConnection:
 
         if not (repository_url.scheme == "https" or repository_url.scheme == "http"):
             Utils.log(
-                Utils.LogType.Error,
+                LogType.Error,
                 "git lab only supports https and http urls for the origin remote currently",
             )
             print('       The url "{}" cannot be used'.format(repository))
             sys.exit(1)
 
         if not repository_url.scheme or not repository_url.hostname:
-            Utils.log(Utils.LogType.Error, "Failed to detect GitLab instance url")
+            Utils.log(LogType.Error, "Failed to detect GitLab instance url")
             sys.exit(1)
 
         gitlab_url = repository_url.scheme + "://" + repository_url.hostname
@@ -71,7 +71,7 @@ class RepositoryConnection:
 
         self.__login(gitlab_url, auth_token)
         if not self.__connection:
-            Utils.log(Utils.LogType.Error, "Failed to connect to GitLab")
+            Utils.log(LogType.Error, "Failed to connect to GitLab")
             sys.exit(0)
 
         self.__remote_project = self.__connection.projects.get(Utils.str_id_for_url(repository))
@@ -82,7 +82,7 @@ class RepositoryConnection:
             self.__gitlab_token = token
             self.__connection.auth()
         except GitlabAuthenticationError:
-            Utils.log(Utils.LogType.Error, "Could not log into GitLab")
+            Utils.log(LogType.Error, "Could not log into GitLab")
             sys.exit(1)
 
     def connection(self) -> Gitlab:

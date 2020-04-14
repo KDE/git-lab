@@ -11,7 +11,7 @@ from typing import List
 from gitlab.v4.objects import ProjectMergeRequest
 
 from lab.repositoryconnection import RepositoryConnection
-from lab.utils import Utils
+from lab.utils import TextFormatting
 from lab.table import Table
 
 
@@ -40,23 +40,15 @@ class MergeRequestList(RepositoryConnection):
 
         for merge_request in merge_requests:
             row: List[str] = []
-            row.append(
-                Utils.TextFormatting.bold
-                + merge_request.references["full"]
-                + Utils.TextFormatting.end
-            )
+            row.append(TextFormatting.bold + merge_request.references["full"] + TextFormatting.end)
             row.append(merge_request.title)
 
             if merge_request.state == "merged":
-                row.append(
-                    Utils.TextFormatting.green + merge_request.state + Utils.TextFormatting.end
-                )
+                row.append(TextFormatting.green + merge_request.state + TextFormatting.end)
             elif merge_request.state == "opened":
                 row.append(merge_request.state)
             elif merge_request.state == "closed":
-                row.append(
-                    Utils.TextFormatting.red + merge_request.state + Utils.TextFormatting.end
-                )
+                row.append(TextFormatting.red + merge_request.state + TextFormatting.end)
 
             table.add_row(row)
 
