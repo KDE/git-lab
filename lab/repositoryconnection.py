@@ -45,23 +45,10 @@ class RepositoryConnection:
 
         repository: str = next(origin.urls)
 
-        repository_url: ParseResult = urlparse(repository)
+        gitlab_url = Utils.gitlab_instance_url(repository)
+        gitlab_hostname = urlparse(gitlab_url).hostname
 
-        if not (repository_url.scheme == "https" or repository_url.scheme == "http"):
-            Utils.log(
-                LogType.Error,
-                "git lab only supports https and http urls for the origin remote currently",
-            )
-            print('The url "{}" cannot be used'.format(repository))
-            sys.exit(1)
-
-        if not repository_url.scheme or not repository_url.hostname:
-            Utils.log(LogType.Error, "Failed to detect GitLab instance url")
-            sys.exit(1)
-
-        gitlab_url = repository_url.scheme + "://" + repository_url.hostname
-
-        auth_token: Optional[str] = self.__config.token(repository_url.hostname)
+        auth_token: Optional[str] = self.__config.token(gitlab_hostname)
         if not auth_token:
             Utils.log(LogType.Error, "No authentication token found. ")
             print(
@@ -69,19 +56,17 @@ class RepositoryConnection:
                     gitlab_url, "profile/personal_access_tokens"
                 )
             )
-            print(
-                'Afterwards use "git lab login --host {} --token t0k3n"'.format(
-                    repository_url.hostname
-                )
-            )
+            print('Afterwards use "git lab login --host {} --token t0k3n"'.format(gitlab_hostname))
             sys.exit(1)
 
         self.__login(gitlab_url, auth_token)
         if not self.__connection:
             Utils.log(LogType.Error, "Failed to connect to GitLab")
-            sys.exit(0)
+            sys.exit(1)
 
-        self.__remote_project = self.__connection.projects.get(Utils.str_id_for_url(repository))
+        self.__remote_project = self.__connection.projects.get(
+            Utils.str_id_for_url(Utils.normalize_url(repository))
+        )
 
     def __login(self, instance: str, token: str) -> None:
         try:
