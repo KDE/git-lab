@@ -11,7 +11,7 @@ import sys
 
 from typing import Optional
 
-from urllib.parse import ParseResult, urlparse
+from urllib.parse import urlparse
 
 from gitlab import Gitlab
 from gitlab.v4.objects import Project
@@ -46,7 +46,11 @@ class RepositoryConnection:
         repository: str = next(origin.urls)
 
         gitlab_url = Utils.gitlab_instance_url(repository)
-        gitlab_hostname = urlparse(gitlab_url).hostname
+        gitlab_hostname: Optional[str] = urlparse(gitlab_url).hostname
+
+        if not gitlab_hostname:
+            Utils.log(LogType.Error, "Failed to detect GitLab hostname")
+            sys.exit(1)
 
         auth_token: Optional[str] = self.__config.token(gitlab_hostname)
         if not auth_token:
