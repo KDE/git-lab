@@ -52,7 +52,7 @@ class RepositoryConnection:
                 LogType.Error,
                 "git lab only supports https and http urls for the origin remote currently",
             )
-            print('       The url "{}" cannot be used'.format(repository))
+            print('The url "{}" cannot be used'.format(repository))
             sys.exit(1)
 
         if not repository_url.scheme or not repository_url.hostname:
@@ -63,9 +63,16 @@ class RepositoryConnection:
 
         auth_token: Optional[str] = self.__config.token(repository_url.hostname)
         if not auth_token:
+            Utils.log(LogType.Error, "No authentication token found. ")
             print(
-                "No authentication token found. "
-                + 'You need to use "git lab login --host {}" first'.format(repository_url.hostname)
+                "Please create a token with the api and write_repsitory scopes on {}/{}.".format(
+                    gitlab_url, "profile/personal_access_tokens"
+                )
+            )
+            print(
+                'Afterwards use "git lab login --host {} --token t0k3n"'.format(
+                    repository_url.hostname
+                )
             )
             sys.exit(1)
 
