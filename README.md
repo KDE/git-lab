@@ -36,6 +36,8 @@ git lab list --project
 git lab list
 ```
 
+* To only show merge requests in specific states, any combination of `--merged`, `--opened` and `--closed` can be added
+
 ### Testing a merge request
 
 ```

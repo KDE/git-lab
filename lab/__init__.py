@@ -39,6 +39,15 @@ def main() -> None:
         help="Show merge requests of the current project, not of the user",
         action="store_true",
     )
+    parser_list.add_argument(
+        "--opened", help="Show opened merge requests", action="store_true",
+    )
+    parser_list.add_argument(
+        "--merged", help="Show merged merge requests", action="store_true",
+    )
+    parser_list.add_argument(
+        "--closed", help="Show closed merge requests", action="store_true",
+    )
 
     args: argparse.Namespace = parser.parse_args()
     if args.subcommand == "diff":
@@ -54,7 +63,7 @@ def main() -> None:
         config.set_token(args.host, args.token)
         config.save()
     elif args.subcommand == "list":
-        lister = MergeRequestList(args.project)
+        lister = MergeRequestList(args.project, args.merged, args.opened, args.closed)
         lister.print_formatted_list()
     else:
         parser.print_help()

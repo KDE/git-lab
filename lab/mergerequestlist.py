@@ -21,20 +21,39 @@ class MergeRequestList(RepositoryConnection):
     """
 
     for_project: bool = False
+    merged: bool = True
+    opened: bool = True
+    closed: bool = True
 
-    def __init__(self, for_project: bool) -> None:
+    def __init__(self, for_project: bool, merged: bool, opened: bool, closed: bool) -> None:
         RepositoryConnection.__init__(self)
         self.for_project = for_project
+        if not merged and not opened and not closed:
+            return
+        self.merged = merged
+        self.opened = opened
+        self.closed = closed
 
     def print_formatted_list(self) -> None:
         """
         prints the list of merge requests to the terminal formatted as a table
         """
         merge_requests: List[ProjectMergeRequest] = []
+
         if self.for_project:
-            merge_requests = self.remote_project().mergerequests.list()
+            base = self.remote_project()
         else:
-            merge_requests = self.connection().mergerequests.list()
+            base = self.connection()
+
+        if self.merged and self.opened and self.closed:
+            merge_requests = base.mergerequests.list()
+        else:
+            if self.merged:
+                merge_requests += base.mergerequests.list(state="merged")
+            if self.opened:
+                merge_requests += base.mergerequests.list(state="opened")
+            if self.closed:
+                merge_requests += base.mergerequests.list(state="closed")
 
         table = Table()
 
