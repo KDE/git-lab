@@ -17,6 +17,7 @@ from gitlab import Gitlab
 from gitlab.v4.objects import Project
 from gitlab.exceptions import GitlabAuthenticationError
 from git import Repo
+from git.exc import InvalidGitRepositoryError
 
 from lab.utils import Utils, LogType
 from lab.config import Config
@@ -35,7 +36,11 @@ class RepositoryConnection:
     __config: Config = Config()
 
     def __init__(self) -> None:
-        self.__local_repo: Repo = Repo(os.getcwd())
+        try:
+            self.__local_repo: Repo = Repo(os.getcwd())
+        except InvalidGitRepositoryError:
+            Utils.log(LogType.Error, "Current directory is not a git repository")
+            sys.exit(1)
 
         try:
             origin = self.__local_repo.remote(name="origin")
