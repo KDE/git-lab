@@ -79,9 +79,12 @@ class MergeRequestCreator(RepositoryConnection):
                 Utils.log(LogType.Info, "Uploading", image)
 
                 filename: str = os.path.basename(image)
-                uploaded_file = self.remote_project().upload(filename, filepath=image)
-
-                output_text = output_text.replace(image, uploaded_file["url"])
+                try:
+                    uploaded_file = self.remote_project().upload(filename, filepath=image)
+                    output_text = output_text.replace(image, uploaded_file["url"])
+                except FileNotFoundError:
+                    Utils.log(LogType.Warning, "Failed to upload image", image)
+                    print("The file does not exist.")
 
         return output_text
 
