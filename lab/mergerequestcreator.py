@@ -6,6 +6,11 @@ Module containing classes for creating merge requests
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import re
+import os
+
+from typing import List, Any
+
 from gitlab.v4.objects import Project
 from gitlab.exceptions import GitlabCreateError
 
@@ -55,6 +60,31 @@ class MergeRequestCreator(RepositoryConnection):
         """
         self.local_repo().remotes.fork.push()
 
+    def __upload_assets(self, text: str) -> str:
+        """
+        Scans the text for local file pathes, uploads the files and returns
+        the text modified to load the files from the uploaded urls
+        """
+        find_expr = re.compile(r"!\[[^\[\(]*\]\([^\[\(]*\)")
+        extract_expr = re.compile(r"(?<=\().+?(?=\))")
+
+        matches: List[Any] = find_expr.findall(text)
+
+        output_text: str = text
+
+        for match in matches:
+            image = extract_expr.findall(match)[0]
+
+            if not image.startswith("http"):
+                Utils.log(LogType.Info, "Uploading", image)
+
+                filename: str = os.path.basename(image)
+                uploaded_file = self.remote_project().upload(filename, filepath=image)
+
+                output_text = output_text.replace(image, uploaded_file["url"])
+
+        return output_text
+
     def create_mr(self) -> None:
         """
         Creates a merge request with the changes from the current branch
@@ -67,7 +97,7 @@ class MergeRequestCreator(RepositoryConnection):
                     "source_branch": self.local_repo().active_branch.name,
                     "target_branch": "master",
                     "title": e_input.title,
-                    "description": e_input.body,
+                    "description": self.__upload_assets(e_input.body),
                     "target_project_id": self.remote_project().id,
                     "allow_maintainer_to_push": True,
                 }
