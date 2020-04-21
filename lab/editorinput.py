@@ -36,7 +36,7 @@ class EditorInput:  # pylint: disable=too-few-public-methods
 
         self.__fulltext = newtext
 
-    def __input(self) -> None:
+    def __input(self, extra_text: str) -> None:
         file = tempfile.NamedTemporaryFile("r+")
         file.write("# Please enter a title below (one line)\n")
         file.write("\n")
@@ -44,7 +44,8 @@ class EditorInput:  # pylint: disable=too-few-public-methods
         file.write("\n")
         file.write("\n")
         file.write("# Lines starting with '#' will be ignored.\n")
-        file.write("# An empty title aborts the workflow.")
+        file.write("# An empty title aborts the workflow.\n")
+        file.write("# {}".format(extra_text))
         file.flush()
 
         subprocess.call(["editor", file.name])
@@ -65,13 +66,14 @@ class EditorInput:  # pylint: disable=too-few-public-methods
 
         return True
 
-    def __init__(self) -> None:
-        self.__input()
+    def __init__(self, extra_text: str = "") -> None:
+        self.__input(extra_text)
         self.__fulltext_remove_comments()
         if not self.__fulltext_valid():
             Utils.log(LogType.Error, "Text not valid, aborting")
             sys.exit(1)
 
         lines: List[str] = self.__fulltext.splitlines()
+
         self.title = lines[0]
         self.body = "\n".join(lines[1:])

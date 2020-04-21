@@ -89,7 +89,10 @@ class MergeRequestCreator(RepositoryConnection):
         """
         Creates a merge request with the changes from the current branch
         """
-        e_input = EditorInput()
+        e_input = EditorInput(
+            extra_text="The markdown sytax for embedding images "
+            + "![description](/path/to/file) can be used to upload images."
+        )
 
         try:
             merge_request = self.__remote_fork.mergerequests.create(
