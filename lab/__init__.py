@@ -22,10 +22,16 @@ def main() -> None:
     """
     parser = argparse.ArgumentParser(description="The arcanist of GitLab.")
     subparsers = parser.add_subparsers(dest="subcommand")
-    subparsers.add_parser("diff", help="Create a new merge request for the current branch")
+    parser_diff = subparsers.add_parser(
+        "diff", help="Create a new merge request for the current branch"
+    )
     parser_patch = subparsers.add_parser("patch", help="check out a remote merge request")
     parser_login = subparsers.add_parser("login", help="Save a token for a GitLab token")
     parser_list = subparsers.add_parser("list", help="List open merge requests")
+
+    parser_diff.add_argument(
+        "--target-branch", help="Use different target branch than master", default="master"
+    )
 
     parser_patch.add_argument(
         "number", metavar="int", type=int, nargs=1, help="Merge request number to checkout",
@@ -51,7 +57,7 @@ def main() -> None:
 
     args: argparse.Namespace = parser.parse_args()
     if args.subcommand == "diff":
-        creator: MergeRequestCreator = MergeRequestCreator()
+        creator: MergeRequestCreator = MergeRequestCreator(args.target_branch)
         creator.fork()
         creator.push()
         creator.create_mr()

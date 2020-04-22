@@ -28,9 +28,11 @@ class MergeRequestCreator(RepositoryConnection):
     # private
     __remote_fork: Project
     __gitlab_token: str
+    __target_branch: str
 
-    def __init__(self) -> None:
+    def __init__(self, target_branch: str) -> None:
         RepositoryConnection.__init__(self)
+        self.__target_branch = target_branch
 
     def fork(self) -> None:
         """
@@ -101,7 +103,7 @@ class MergeRequestCreator(RepositoryConnection):
             merge_request = self.__remote_fork.mergerequests.create(
                 {
                     "source_branch": self.local_repo().active_branch.name,
-                    "target_branch": "master",
+                    "target_branch": self.__target_branch,
                     "title": e_input.title,
                     "description": self.__upload_assets(e_input.body),
                     "target_project_id": self.remote_project().id,
