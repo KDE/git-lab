@@ -36,11 +36,7 @@ class RepositoryConnection:
     __config: Config = Config()
 
     def __init__(self) -> None:
-        try:
-            self.__local_repo: Repo = Repo(os.getcwd())
-        except InvalidGitRepositoryError:
-            Utils.log(LogType.Error, "Current directory is not a git repository")
-            sys.exit(1)
+        self.__local_repo = Utils.get_cwd_repo()
 
         try:
             origin = self.__local_repo.remote(name="origin")

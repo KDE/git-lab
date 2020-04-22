@@ -22,7 +22,7 @@ class Feature:
     __git: Any
 
     def __init__(self) -> None:
-        self.__repo = Repo(os.getcwd())
+        self.__repo = Utils.get_cwd_repo()
         self.__git = self.__repo.git
 
     def checkout(self, start: str, name: str) -> None:

@@ -7,9 +7,13 @@ Module containing classes for common tasks
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import sys
+import os
 
 from urllib.parse import ParseResult, urlparse, quote_plus
 from enum import IntEnum, auto
+
+from git import Repo
+from git.exc import InvalidGitRepositoryError
 
 
 class LogType(IntEnum):
@@ -125,3 +129,11 @@ class Utils:
         # If everything failed, exit
         Utils.log(LogType.Error, "Failed to detect GitLab instance url")
         sys.exit(1)
+
+    @staticmethod
+    def get_cwd_repo() -> Repo:
+        try:
+            return Repo(os.getcwd())
+        except InvalidGitRepositoryError:
+            Utils.log(LogType.Error, "Current directory is not a git repository")
+            sys.exit(1)
