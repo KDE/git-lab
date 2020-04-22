@@ -9,16 +9,12 @@ Base module for the lab package
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import argparse
-import os
 
 from lab.mergerequestcreator import MergeRequestCreator
 from lab.mergerequestcheckout import MergeRequestCheckout
 from lab.mergerequestlist import MergeRequestList
 from lab.config import Config
-from lab.utils import Utils, LogType
-
-from git import Repo
-from git.exc import GitCommandError
+from lab.feature import Feature
 
 
 def main() -> None:
@@ -61,9 +57,7 @@ def main() -> None:
         "--closed", help="Show closed merge requests", action="store_true",
     )
 
-    parser_feature.add_argument(
-        "name", nargs="?", help="name for the new branch"
-    )
+    parser_feature.add_argument("name", nargs="?", help="name for the new branch")
 
     parser_feature.add_argument(
         "start", nargs="?", help="starting point for the new branch", default="HEAD"
@@ -86,22 +80,11 @@ def main() -> None:
         lister = MergeRequestList(args.project, args.merged, args.opened, args.closed)
         lister.print_formatted_list()
     elif args.subcommand == "feature":
-        repo = Repo(os.getcwd())
-        git = repo.git
-
+        feature = Feature()
         if args.name:
-            try:
-                if args.name in repo.refs:
-                    git.checkout(args.name)
-                    Utils.log(LogType.Info, "Switched to branch '{}'".format(args.name))
-                else:
-                    git.checkout(args.start, b=args.name) # create a new branch
-                    Utils.log(LogType.Info, "Switched to a new branch '{}'".format(args.name))
-
-            except GitCommandError as e:
-                Utils.log(LogType.Error, e.stderr.strip())
+            feature.checkout(args.start, args.name)
         else:
-            print(git.branch())
+            feature.list()
     else:
         parser.print_help()
 
