@@ -19,6 +19,26 @@ from lab.utils import Utils, LogType
 from lab.editorinput import EditorInput
 
 
+def parser(subparsers):
+    p = subparsers.add_parser(
+        "diff",
+        help="Create a new merge request for the current branch",
+    )
+    p.add_argument(
+        "--target-branch",
+        help="Use different target branch than master",
+        default="master",
+    )
+    return p
+
+
+def run(args):
+    creator: MergeRequestCreator = MergeRequestCreator(args.target_branch)
+    creator.fork()
+    creator.push()
+    creator.create_mr()
+
+
 class MergeRequestCreator(RepositoryConnection):
     """
     Class for creating a merge request,

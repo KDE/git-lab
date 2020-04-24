@@ -13,6 +13,25 @@ from gitlab.v4.objects import ProjectMergeRequest
 from lab.repositoryconnection import RepositoryConnection
 
 
+def parser(subparsers):
+    p = subparsers.add_parser(
+        "patch", help="check out a remote merge request"
+    )
+    p.add_argument(
+        "number",
+        metavar="int",
+        type=int,
+        nargs=1,
+        help="Merge request number to checkout",
+    )
+    return p
+
+
+def run(args):
+    checkouter: MergeRequestCheckout = MergeRequestCheckout()
+    checkouter.checkout(args.number[0])
+
+
 class MergeRequestCheckout(RepositoryConnection):
     """
     Check out a merge request in the current git repository

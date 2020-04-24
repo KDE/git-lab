@@ -15,6 +15,32 @@ from lab.utils import TextFormatting
 from lab.table import Table
 
 
+def parser(subparsers):
+    p = subparsers.add_parser(
+        "list", help="List open merge requests"
+    )
+    p.add_argument(
+        "--project",
+        help="Show merge requests of the current project, not of the user",
+        action="store_true",
+    )
+    p.add_argument(
+        "--opened", help="Show opened merge requests", action="store_true",
+    )
+    p.add_argument(
+        "--merged", help="Show merged merge requests", action="store_true",
+    )
+    p.add_argument(
+        "--closed", help="Show closed merge requests", action="store_true",
+    )
+    return p
+
+
+def run(args):
+    lister = MergeRequestList(args.project, args.merged, args.opened, args.closed)
+    lister.print_formatted_list()
+
+
 class MergeRequestList(RepositoryConnection):
     """
     Lists all merge requests of the current repository

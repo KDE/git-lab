@@ -16,6 +16,23 @@ from git.exc import GitCommandError
 from lab.utils import Utils, LogType
 
 
+def parser(subparsers):
+    p = subparsers.add_parser("feature", help="Create branches and list branches")
+    p.add_argument("name", nargs="?", help="name for the new branch")
+    p.add_argument(
+        "start", nargs="?", help="starting point for the new branch", default="HEAD"
+    )
+    return p
+
+
+def run(args):
+    feature = Feature()
+    if args.name:
+        feature.checkout(args.start, args.name)
+    else:
+        feature.list()
+
+
 class Feature:
     """
     represents the feature command
