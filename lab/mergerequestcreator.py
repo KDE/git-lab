@@ -21,8 +21,9 @@ from lab.editorinput import EditorInput
 
 def parser(subparsers):
     p = subparsers.add_parser(
-        "diff",
+        "mr",
         help="Create a new merge request for the current branch",
+        aliases=["arc-diff"]
     )
     p.add_argument(
         "--target-branch",

@@ -15,7 +15,7 @@ from lab.repositoryconnection import RepositoryConnection
 
 def parser(subparsers):
     p = subparsers.add_parser(
-        "patch", help="check out a remote merge request"
+        "checkout", help="check out a remote merge request", aliases=["arc-patch"]
     )
     p.add_argument(
         "number",
