@@ -2,6 +2,10 @@
 This module contains code for the feature command
 """
 
+# SPDX-FileCopyrightText: 2020 Jonah Brüchert <jbb@kaidan.im>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 import os
 
 from typing import Any
