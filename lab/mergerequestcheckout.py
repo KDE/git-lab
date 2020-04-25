@@ -6,6 +6,7 @@ Module containing classes for checking out merge requests
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import argparse
 import sys
 
 from gitlab.v4.objects import ProjectMergeRequest
@@ -13,21 +14,26 @@ from gitlab.v4.objects import ProjectMergeRequest
 from lab.repositoryconnection import RepositoryConnection
 
 
-def parser(subparsers):
-    p = subparsers.add_parser(
-        "checkout", help="check out a remote merge request", aliases=["arc-patch"]
+def parser(subparsers: argparse._SubParsersAction) -> argparse.ArgumentParser:
+    """
+    Subparser for checking-out merge request command
+    :param subparsers: subparsers object from global parser
+    :return: checking-out merge request subparser
+    """
+    checkouter_parser: argparse.ArgumentParser = subparsers.add_parser(
+        "checkout", help="check out a remote merge request", aliases=["patch"]
     )
-    p.add_argument(
-        "number",
-        metavar="int",
-        type=int,
-        nargs=1,
-        help="Merge request number to checkout",
+    checkouter_parser.add_argument(
+        "number", metavar="int", type=int, nargs=1, help="Merge request number to checkout",
     )
-    return p
+    return checkouter_parser
 
 
-def run(args):
+def run(args: argparse.Namespace) -> None:
+    """
+    run checking-out merge request command
+    :param args: parsed arguments
+    """
     checkouter: MergeRequestCheckout = MergeRequestCheckout()
     checkouter.checkout(args.number[0])
 

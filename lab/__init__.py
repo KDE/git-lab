@@ -15,21 +15,26 @@ from lab import (
     mergerequestcheckout,
     mergerequestlist,
     feature,
+    login,
 )
 
-from lab.config import Config
 
+class Parser:  # pylint: disable=R0903
+    """
+    GLobal parser, will instantiate subparser for each commands
+    """
 
-class Parser:
-    def __init__(self):
+    def __init__(self) -> None:
         self.parser = argparse.ArgumentParser(description="The arcanist of GitLab.")
         self.subparsers = self.parser.add_subparsers(dest="subcommand")
+
         # init all subcommand
         command_list = [
             mergerequestcreator,
             mergerequestcheckout,
             mergerequestlist,
             feature,
+            login,
         ]
         for command in command_list:
             parser = command.parser(self.subparsers)
@@ -37,7 +42,10 @@ class Parser:
             if not parser.get_default(dest="runner"):
                 parser.set_defaults(runner=command.run)
 
-    def parse(self):
+    def parse(self) -> None:
+        """
+        parse args and run command
+        """
         args: argparse.Namespace = self.parser.parse_args()
         if hasattr(args, "runner"):
             args.runner(args)

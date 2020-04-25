@@ -6,6 +6,7 @@ Module containing classes for creating merge requests
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import argparse
 import re
 import os
 
@@ -19,21 +20,26 @@ from lab.utils import Utils, LogType
 from lab.editorinput import EditorInput
 
 
-def parser(subparsers):
-    p = subparsers.add_parser(
-        "mr",
-        help="Create a new merge request for the current branch",
-        aliases=["arc-diff"]
+def parser(subparsers: argparse._SubParsersAction) -> argparse.ArgumentParser:
+    """
+    Subparser for merge request creation command
+    :param subparsers: subparsers object from global parser
+    :return: merge request creation subparser
+    """
+    create_parser: argparse.ArgumentParser = subparsers.add_parser(
+        "mr", help="Create a new merge request for the current branch", aliases=["diff"]
     )
-    p.add_argument(
-        "--target-branch",
-        help="Use different target branch than master",
-        default="master",
+    create_parser.add_argument(
+        "--target-branch", help="Use different target branch than master", default="master",
     )
-    return p
+    return create_parser
 
 
-def run(args):
+def run(args: argparse.Namespace) -> None:
+    """
+    run merge request creation command
+    :param args: parsed arguments
+    """
     creator: MergeRequestCreator = MergeRequestCreator(args.target_branch)
     creator.fork()
     creator.push()

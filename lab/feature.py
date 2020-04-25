@@ -6,7 +6,7 @@ This module contains code for the feature command
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-import os
+import argparse
 
 from typing import Any
 
@@ -16,16 +16,27 @@ from git.exc import GitCommandError
 from lab.utils import Utils, LogType
 
 
-def parser(subparsers):
-    p = subparsers.add_parser("feature", help="Create branches and list branches")
-    p.add_argument("name", nargs="?", help="name for the new branch")
-    p.add_argument(
+def parser(subparsers: argparse._SubParsersAction) -> argparse.ArgumentParser:
+    """
+    Subparser for feature command
+    :param subparsers: subparsers object from global parser
+    :return: feature request subparser
+    """
+    feature_parser: argparse.ArgumentParser = subparsers.add_parser(
+        "feature", help="Create branches and list branches"
+    )
+    feature_parser.add_argument("name", nargs="?", help="name for the new branch")
+    feature_parser.add_argument(
         "start", nargs="?", help="starting point for the new branch", default="HEAD"
     )
-    return p
+    return feature_parser
 
 
-def run(args):
+def run(args: argparse.Namespace) -> None:
+    """
+    run feature command
+    :param args: parsed arguments
+    """
     feature = Feature()
     if args.name:
         feature.checkout(args.start, args.name)

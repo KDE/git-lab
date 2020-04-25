@@ -6,7 +6,6 @@ Base class for creating a connection to the GitLab instance used by the reposito
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-import os
 import sys
 
 from typing import Optional
@@ -17,7 +16,6 @@ from gitlab import Gitlab
 from gitlab.v4.objects import Project
 from gitlab.exceptions import GitlabAuthenticationError
 from git import Repo
-from git.exc import InvalidGitRepositoryError
 
 from lab.utils import Utils, LogType
 from lab.config import Config
