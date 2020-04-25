@@ -15,7 +15,9 @@ from lab.utils import TextFormatting
 from lab.table import Table
 
 
-def parser(subparsers: argparse._SubParsersAction) -> argparse.ArgumentParser:
+def parser(
+    subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
+) -> argparse.ArgumentParser:
     """
     Subparser for merge request list command
     :param subparsers: subparsers object from global parser

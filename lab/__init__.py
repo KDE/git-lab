@@ -10,6 +10,8 @@ Base module for the lab package
 
 import argparse
 
+from typing import List, Any
+
 from lab import (
     mergerequestcreator,
     mergerequestcheckout,
@@ -21,7 +23,7 @@ from lab import (
 
 class Parser:  # pylint: disable=R0903
     """
-    GLobal parser, will instantiate subparser for each commands
+    Global parser, will instantiate subparser for each commands
     """
 
     def __init__(self) -> None:
@@ -29,7 +31,7 @@ class Parser:  # pylint: disable=R0903
         self.subparsers = self.parser.add_subparsers(dest="subcommand")
 
         # init all subcommand
-        command_list = [
+        command_list: List[Any] = [
             mergerequestcreator,
             mergerequestcheckout,
             mergerequestlist,

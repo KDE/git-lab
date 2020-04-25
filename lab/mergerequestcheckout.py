@@ -14,7 +14,9 @@ from gitlab.v4.objects import ProjectMergeRequest
 from lab.repositoryconnection import RepositoryConnection
 
 
-def parser(subparsers: argparse._SubParsersAction) -> argparse.ArgumentParser:
+def parser(
+    subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
+) -> argparse.ArgumentParser:
     """
     Subparser for checking-out merge request command
     :param subparsers: subparsers object from global parser

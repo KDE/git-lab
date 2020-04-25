@@ -20,7 +20,9 @@ from lab.utils import Utils, LogType
 from lab.editorinput import EditorInput
 
 
-def parser(subparsers: argparse._SubParsersAction) -> argparse.ArgumentParser:
+def parser(
+    subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
+) -> argparse.ArgumentParser:
     """
     Subparser for merge request creation command
     :param subparsers: subparsers object from global parser

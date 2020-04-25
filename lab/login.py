@@ -10,7 +10,9 @@ import argparse
 from lab.config import Config
 
 
-def parser(subparsers: argparse._SubParsersAction) -> argparse.ArgumentParser:
+def parser(
+    subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
+) -> argparse.ArgumentParser:
     """
     Subparser for login command
     :param subparsers: subparsers object from global parser

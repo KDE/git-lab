@@ -16,7 +16,9 @@ from git.exc import GitCommandError
 from lab.utils import Utils, LogType
 
 
-def parser(subparsers: argparse._SubParsersAction) -> argparse.ArgumentParser:
+def parser(
+    subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
+) -> argparse.ArgumentParser:
     """
     Subparser for feature command
     :param subparsers: subparsers object from global parser
