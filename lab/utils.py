@@ -6,6 +6,7 @@ Module containing classes for common tasks
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 import shutil
+import subprocess
 
 import sys
 import os
@@ -172,3 +173,11 @@ class Utils:
             else:
                 editor = "vi"
         return editor
+
+    @staticmethod
+    def xdg_open(path: str) -> None:
+        """
+        Open path with xdg-open
+        :param path: path to open
+        """
+        subprocess.call(f"xdg-open {path}")

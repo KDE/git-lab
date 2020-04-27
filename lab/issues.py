@@ -1,0 +1,167 @@
+"""
+Module containing issues command
+"""
+
+# SPDX-FileCopyrightText: 2020 Benjamin Port <benjamin.port@kde.org>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+import argparse
+import os
+import sys
+from typing import List
+
+from gitlab.v4.objects import ProjectIssue, GitlabGetError
+
+from lab.repositoryconnection import RepositoryConnection
+from lab.utils import TextFormatting, Utils, LogType
+from lab.table import Table
+
+
+def parser(
+    subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
+) -> argparse.ArgumentParser:
+    """
+    Subparser for issues command
+    :param subparsers: subparsers object from global parser
+    :return: issues subparser
+    """
+
+    issues_parser: argparse.ArgumentParser = subparsers.add_parser("issues", help="Gitlab issues")
+
+    issues_parser.add_argument(
+        "--opened", help="Show opened issues", action="store_true",
+    )
+    issues_parser.add_argument(
+        "--closed", help="Show closed issues", action="store_true",
+    )
+    group = issues_parser.add_mutually_exclusive_group()
+    group.add_argument(
+        "--assigned", help="Show only issues assigned to me", action="store_true",
+    )
+    group.add_argument(
+        "--project",
+        help="Show all project issues and not only the one you authored",
+        action="store_true",
+    )
+    issues_parser.add_argument(
+        "issue_id", help="Show issue by id if provided", metavar="issue_id", type=int, nargs="?"
+    )
+    issues_parser.add_argument("--web", help="open on web browser", action="store_true")
+    return issues_parser
+
+
+def run(args: argparse.Namespace) -> None:
+    """
+    run merge request list command
+    :param args: parsed arguments
+    """
+    if args.issue_id is not None:
+        issue: IssuesShow = IssuesShow(args.issue_id)
+        if args.web:
+            issue.open_web()
+        else:
+            print(issue)
+    else:
+        lister: IssuesList = IssuesList(args.opened, args.closed, args.assigned, args.project)
+        if args.web:
+            lister.open_web()
+        else:
+            lister.print_formatted_list()
+
+
+class IssuesList(RepositoryConnection):
+    """
+    Lists all merge requests of the current repository
+    """
+
+    opened: bool = True
+    closed: bool = True
+    assigned: bool = False
+    project: bool = False
+
+    def __init__(self, opened: bool, closed: bool, assigned: bool, project: bool) -> None:
+        RepositoryConnection.__init__(self)
+        self.opened = opened
+        self.closed = closed
+        self.assigned = assigned
+        self.project = project
+
+    def print_formatted_list(self) -> None:
+        """
+        prints the list of issues to the terminal formatted as a table
+        """
+        table = Table()
+        args = {}
+
+        # compute filters
+        state: str = "all"
+        if self.opened and not self.closed:
+            state = "opened"
+        elif self.closed and not self.opened:
+            state = "closed"
+        args["state"] = state
+
+        # Default scope is author == user
+        if self.assigned:
+            args["scope"] = "assigned_to_me"
+        elif self.project:
+            args["scope"] = "all"
+
+        issues: List[ProjectIssue] = self.remote_project().issues.list(**args)
+        for issue in issues:
+            formatting = TextFormatting.green if issue.state == "opened" else TextFormatting.red
+            row: List[str] = [
+                TextFormatting.bold + issue.references["full"] + TextFormatting.end,
+                issue.title,
+                formatting + issue.state + TextFormatting.end,
+            ]
+
+            table.add_row(row)
+
+        table.print()
+
+    def open_web(self) -> None:
+        """
+        Open issue with xdg-open
+        """
+        if self.remote_project().issues_enabled:
+            Utils.xdg_open(f"{self.remote_project().web_url}/-/issues")
+        else:
+            Utils.log(LogType.Error, "Issue are disabled for this project")
+
+
+class IssuesShow(RepositoryConnection):
+    """
+    Show issue
+    """
+
+    def __init__(self, issue_id: int):
+        RepositoryConnection.__init__(self)
+        try:
+            self.issue: ProjectIssue = self.remote_project().issues.get(issue_id, lazy=False)
+        except GitlabGetError:
+            Utils.log(LogType.Warning, f"No issue with ID {issue_id}")
+            sys.exit(1)
+
+    def open_web(self) -> None:
+        """
+        Open issue with xdg-open
+        """
+        Utils.xdg_open(self.issue.web_url)
+
+    def __str__(self) -> str:
+        formatting = TextFormatting.green if self.issue.state == "opened" else TextFormatting.red
+        textbuffer: str = ""
+        textbuffer += (
+            TextFormatting.bold
+            + self.issue.title
+            + TextFormatting.end
+            + f" (#{self.issue.iid}) "
+            + formatting
+            + self.issue.state
+            + TextFormatting.end
+            + os.linesep
+        )
+        textbuffer += self.issue.description
+        return textbuffer
