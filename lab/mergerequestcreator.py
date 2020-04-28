@@ -56,7 +56,6 @@ class MergeRequestCreator(RepositoryConnection):
 
     # private
     __remote_fork: Project
-    __gitlab_token: str
     __target_branch: str
 
     def __init__(self, target_branch: str) -> None:
@@ -73,7 +72,7 @@ class MergeRequestCreator(RepositoryConnection):
             self.local_repo().create_remote("fork", url=self.__remote_fork.http_url_to_repo)
         except GitlabCreateError:
             if "fork" in self.local_repo().remotes:
-                Utils.log(LogType.Info, "Fork already exists, continueing")
+                Utils.log(LogType.Info, "Fork already exists, continuing")
             else:
                 Utils.log(
                     LogType.Info,
@@ -124,7 +123,7 @@ class MergeRequestCreator(RepositoryConnection):
         Creates a merge request with the changes from the current branch
         """
         e_input = EditorInput(
-            extra_text="The markdown sytax for embedding images "
+            extra_text="The markdown syntax for embedding images "
             + "![description](/path/to/file) can be used to upload images."
         )
 
