@@ -52,11 +52,16 @@ class Search(RepositoryConnection):
         :param query: Search query
         """
         table = Table()
+
         for result in self.connection().search("projects", query):
+            description: str = result["description"]
+            if len(description) > 50:
+                description = description[:50] + "…"
+
             table.add_row(
                 [
                     TextFormatting.bold + result["path_with_namespace"] + TextFormatting.end,
-                    result["description"],
+                    description,
                     TextFormatting.underline + result["ssh_url_to_repo"] + TextFormatting.end,
                 ]
             )
