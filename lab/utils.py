@@ -54,7 +54,8 @@ class Utils:
         """
         Returns the url encoded string id for a repository
         """
-        repository_url: ParseResult = urlparse(url.replace(".git", ""))
+        normalized_url: str = Utils.normalize_url(url)
+        repository_url: ParseResult = urlparse(normalized_url.replace(".git", ""))
         return quote_plus(repository_url.path[1:])
 
     @staticmethod
@@ -83,7 +84,7 @@ class Utils:
         Creates a correctly parsable url from a git remote url.
         Git remote urls can also be written in scp syntax, which is technically not a real url.
 
-        Example: git@invent.kde.org:KDE/kaidan becomse ssh://git@invent.kde.org/KDE/kaidan
+        Example: git@invent.kde.org:KDE/kaidan becomes ssh://git@invent.kde.org/KDE/kaidan
         """
         result = urlparse(url)
 
