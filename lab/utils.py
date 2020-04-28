@@ -132,6 +132,10 @@ class Utils:
 
     @staticmethod
     def get_cwd_repo() -> Repo:
+        """
+        Creates a Repo object for the current directory.
+        If it is not a git repository, an error is shown.
+        """
         try:
             return Repo(os.getcwd())
         except InvalidGitRepositoryError:
