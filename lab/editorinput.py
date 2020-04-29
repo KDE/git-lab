@@ -48,7 +48,7 @@ class EditorInput:  # pylint: disable=too-few-public-methods
         file.write("# {}".format(extra_text))
         file.flush()
 
-        subprocess.call(["editor", file.name])
+        subprocess.call([Utils.editor(), file.name])
 
         file.seek(0)
         self.__fulltext = file.read()

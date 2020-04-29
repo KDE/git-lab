@@ -5,6 +5,7 @@ Module containing classes for common tasks
 # SPDX-FileCopyrightText: 2020 Jonah Brüchert <jbb@kaidan.im>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
+import shutil
 
 import sys
 import os
@@ -142,3 +143,22 @@ class Utils:
         except InvalidGitRepositoryError:
             Utils.log(LogType.Error, "Current directory is not a git repository")
             sys.exit(1)
+
+    @staticmethod
+    def editor() -> str:
+        """
+        return prefered user editor using git configuration
+        """
+        repo = Utils.get_cwd_repo()
+        config = repo.config_reader()
+        editor: str = config.get_value("core", "editor", None)
+        if not editor:
+            if "EDITOR" in os.environ:
+                editor = os.environ["EDITOR"]
+            elif "VISUAL" in os.environ:
+                editor = os.environ["VISUAL"]
+            elif shutil.which("editor"):
+                editor = "editor"
+            else:
+                editor = "vi"
+        return editor
