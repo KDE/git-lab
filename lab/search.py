@@ -17,9 +17,9 @@ def parser(
     subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
 ) -> argparse.ArgumentParser:
     """
-    Subparser for merge request creation command
+    Subparser for search command
     :param subparsers: subparsers object from global parser
-    :return: merge request creation subparser
+    :return: search subparser
     """
     search_parser: argparse.ArgumentParser = subparsers.add_parser(
         "search", help="Search for a repository"
