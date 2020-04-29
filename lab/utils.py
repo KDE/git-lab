@@ -151,7 +151,7 @@ class Utils:
         """
         repo = Utils.get_cwd_repo()
         config = repo.config_reader()
-        editor: str = config.get_value("core", "editor", None)
+        editor: str = config.get_value("core", "editor", "")
         if not editor:
             if "EDITOR" in os.environ:
                 editor = os.environ["EDITOR"]
