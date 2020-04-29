@@ -56,11 +56,7 @@ class EditorInput:  # pylint: disable=too-few-public-methods
     def __fulltext_valid(self) -> bool:
         lines = self.__fulltext.splitlines()
 
-        try:
-            if lines[0] == "":
-                Utils.log(LogType.Error, "The first line (title) can't be empty")
-                return False
-        except IndexError:
+        if not lines or not lines[0]:
             Utils.log(LogType.Error, "The first line (title) can't be empty")
             return False
 
