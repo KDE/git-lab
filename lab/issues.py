@@ -102,7 +102,7 @@ class IssuesList(RepositoryConnection):
             state = "closed"
         args["state"] = state
 
-        # Default scope is author == user
+        args["scope"] = "created_by_me"
         if self.assigned:
             args["scope"] = "assigned_to_me"
         elif self.project:
