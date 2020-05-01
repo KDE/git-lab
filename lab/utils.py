@@ -180,4 +180,4 @@ class Utils:
         Open path with xdg-open
         :param path: path to open
         """
-        subprocess.call(f"xdg-open {path}")
+        subprocess.call(("xdg-open", path))
