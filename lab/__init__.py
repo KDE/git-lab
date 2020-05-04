@@ -12,7 +12,15 @@ import argparse
 
 from typing import List, Any
 
-from lab import mergerequestcreator, mergerequestcheckout, mergerequestlist, feature, login, search
+from lab import (
+    mergerequestcreator,
+    mergerequestcheckout,
+    mergerequestlist,
+    feature,
+    login,
+    search,
+    fork,
+)
 
 
 class Parser:  # pylint: disable=R0903
@@ -32,6 +40,7 @@ class Parser:  # pylint: disable=R0903
             feature,
             login,
             search,
+            fork,
         ]
         for command in command_list:
             parser = command.parser(self.subparsers)
