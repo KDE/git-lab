@@ -69,7 +69,7 @@ class MergeRequestCreator(RepositoryConnection):
         """
         try:
             self.__remote_fork = self.remote_project().forks.create({})
-            self.local_repo().create_remote("fork", url=self.__remote_fork.http_url_to_repo)
+            self.local_repo().create_remote("fork", url=self.__remote_fork.ssh_url_to_repo)
         except GitlabCreateError:
             if "fork" in self.local_repo().remotes:
                 Utils.log(LogType.Info, "Fork already exists, continuing")
@@ -78,7 +78,9 @@ class MergeRequestCreator(RepositoryConnection):
                     LogType.Info,
                     "Fork exists, but no fork remote exists locally, trying to guess the url",
                 )
-                url = self.connection().user.web_url + "/" + self.remote_project().path
+                # Detect ssh url
+                url = Utils.ssh_url_from_http(self.connection().user.web_url + "/" + self.remote_project().path)
+
                 self.local_repo().create_remote("fork", url=url)
 
             str_id: str = Utils.str_id_for_url(self.local_repo().remotes.fork.url)

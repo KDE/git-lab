@@ -100,6 +100,16 @@ class Utils:
         sys.exit(1)
 
     @staticmethod
+    def ssh_url_from_http(url: str) -> str:
+        """
+        Creates an ssh url from a http url
+
+        :return ssh url
+        """
+
+        return url.replace("https://", "ssh://git@").replace("http://", "ssh://git@")
+
+    @staticmethod
     def gitlab_instance_url(repository: str) -> str:
         """
         returns the gitlab instance url of a git remote url
