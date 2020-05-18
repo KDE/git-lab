@@ -9,7 +9,7 @@ Module containing issues command
 import argparse
 import os
 import sys
-from typing import List
+from typing import List, Dict
 
 from gitlab.v4.objects import ProjectIssue, GitlabGetError
 
@@ -80,19 +80,19 @@ class IssuesList(RepositoryConnection):
     assigned: bool = False
     project: bool = False
 
-    def __init__(self, opened: bool, closed: bool, assigned: bool, project: bool) -> None:
+    def __init__(self, opened: bool, closed: bool, assigned: bool, for_project: bool) -> None:
         RepositoryConnection.__init__(self)
         self.opened = opened
         self.closed = closed
         self.assigned = assigned
-        self.project = project
+        self.for_project = for_project
 
     def print_formatted_list(self) -> None:
         """
         prints the list of issues to the terminal formatted as a table
         """
         table = Table()
-        args = {}
+        args: Dict[str, str] = {}
 
         # compute filters
         state: str = "all"
@@ -102,13 +102,22 @@ class IssuesList(RepositoryConnection):
             state = "closed"
         args["state"] = state
 
-        args["scope"] = "created_by_me"
-        if self.assigned:
+        issues: List[ProjectIssue]
+        if not self.for_project and self.assigned:
+            # List issues all over the instance assigned to me
             args["scope"] = "assigned_to_me"
-        elif self.project:
+            issues = self.connection().issues.list(**args)
+        elif not self.for_project and not self.assigned:
+            # Request both created and assigned issues on the whole instance
+            args["scope"] = "created_by_me"
+            issues = self.connection().issues.list(**args)
+            args["scope"] = "assigned_to_me"
+            issues += self.connection().issues.list(**args)
+        elif self.for_project and not self.assigned:
+            # Request all issues on the current project
             args["scope"] = "all"
+            issues = self.remote_project().issues.list(**args)
 
-        issues: List[ProjectIssue] = self.remote_project().issues.list(**args)
         for issue in issues:
             formatting = TextFormatting.green if issue.state == "opened" else TextFormatting.red
             row: List[str] = [
