@@ -73,7 +73,7 @@ class MergeRequestCreator(RepositoryConnection):
             # WORKAROUND: the return of create() is unreliable,
             # and sometimes doesn't allow to create merge requests,
             # so request a fresh project object.
-            self.__remote_fork = self.connection().projects.get(self.remote_project().id)
+            self.__remote_fork = self.connection().projects.get(self.__remote_fork.id)
 
             self.local_repo().create_remote("fork", url=self.__remote_fork.ssh_url_to_repo)
         except GitlabCreateError:
