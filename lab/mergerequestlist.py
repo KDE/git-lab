@@ -24,7 +24,7 @@ def parser(
     :return: merge request list subparser
     """
     lister_parser: argparse.ArgumentParser = subparsers.add_parser(
-        "list", help="List open merge requests"
+        "mrs", aliases=["list"], help="List open merge requests"
     )
     lister_parser.add_argument(
         "--project",
