@@ -85,7 +85,9 @@ class MergeRequestCreator(RepositoryConnection):
                     "Fork exists, but no fork remote exists locally, trying to guess the url",
                 )
                 # Detect ssh url
-                url = Utils.ssh_url_from_http(self.connection().user.web_url + "/" + self.remote_project().path)
+                url = Utils.ssh_url_from_http(
+                    self.connection().user.web_url + "/" + self.remote_project().path
+                )
 
                 self.local_repo().create_remote("fork", url=url)
 
