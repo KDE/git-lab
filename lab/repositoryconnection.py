@@ -71,9 +71,9 @@ class RepositoryConnection:
             Utils.str_id_for_url(Utils.normalize_url(repository))
         )
 
-    def __login(self, instance: str, token: str) -> None:
+    def __login(self, hostname: str, token: str) -> None:
         try:
-            self.__connection: Gitlab = Gitlab(instance, private_token=token)
+            self.__connection: Gitlab = Gitlab(hostname, private_token=token)
             self.__gitlab_token = token
             self.__connection.auth()
         except GitlabAuthenticationError:

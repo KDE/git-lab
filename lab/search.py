@@ -8,7 +8,9 @@ Module providing search capabilities
 
 import argparse
 
-from lab.repositoryconnection import RepositoryConnection
+from typing import Optional
+
+from lab.allinstancesconnection import AllInstancesConnection
 from lab.table import Table
 from lab.utils import TextFormatting
 
@@ -38,13 +40,13 @@ def run(args: argparse.Namespace) -> None:
     search.search_projects(args.search_query)
 
 
-class Search(RepositoryConnection):
+class Search(AllInstancesConnection):
     """
     Search class
     """
 
     def __init__(self) -> None:
-        RepositoryConnection.__init__(self)
+        AllInstancesConnection.__init__(self)
 
     def search_projects(self, query: str) -> None:
         """
@@ -53,17 +55,22 @@ class Search(RepositoryConnection):
         """
         table = Table()
 
-        for result in self.connection().search("projects", query):
-            description: str = result["description"]
-            if len(description) > 50:
-                description = description[:50] + "…"
+        for connection in self.connections():
+            for result in connection.search("projects", query):
+                description: Optional[str] = result["description"]
+                if description:
+                    description = description.replace("\n", "")
+                    if len(description) > 50:
+                        description = description[:50] + "…"
+                else:
+                    description = "No description"
 
-            table.add_row(
-                [
-                    TextFormatting.bold + result["path_with_namespace"] + TextFormatting.end,
-                    description,
-                    TextFormatting.underline + result["ssh_url_to_repo"] + TextFormatting.end,
-                ]
-            )
+                table.add_row(
+                    [
+                        TextFormatting.bold + result["path_with_namespace"] + TextFormatting.end,
+                        description,
+                        TextFormatting.underline + result["ssh_url_to_repo"] + TextFormatting.end,
+                    ]
+                )
 
         table.print()

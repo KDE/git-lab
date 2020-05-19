@@ -101,3 +101,18 @@ class Config:
             self.__config["instances"][hostname] = {}
 
         self.__config["instances"][hostname]["token"] = token
+
+    def instances(self) -> Dict[str, Any]:
+        """
+        Returns the list of known instances
+        """
+        instances: Any
+        try:
+            instances = self.__config["instances"]
+        except KeyError:
+            return {}
+
+        if isinstance(instances, dict):
+            return instances
+
+        return {}
