@@ -8,6 +8,7 @@ Module containing classes for working with configuration
 
 import json
 import os
+import subprocess
 
 from typing import TextIO, Dict, Optional, Any, List
 
@@ -82,14 +83,21 @@ class Config:
         Returns the token for a GitLab instance.
         If none was found, it returns None
         """
-        token: Any
-        try:
-            token = self.__config["instances"][hostname]["token"]
-        except KeyError:
-            return None
+        if hostname in self.__config["instances"]:
+            # Command case
+            if (
+                "auth_type" in self.__config["instances"][hostname]
+                and self.__config["instances"][hostname]["auth_type"] == "command"
+            ):
+                token = subprocess.check_output(
+                    self.__config["instances"][hostname]["command"], shell=True
+                ).decode().strip()
+                return token
 
-        if isinstance(token, str):
-            return token
+            # Token case
+            token = self.__config["instances"][hostname]["token"]
+            if isinstance(token, str):
+                return token
 
         return None
 
@@ -101,6 +109,17 @@ class Config:
             self.__config["instances"][hostname] = {}
 
         self.__config["instances"][hostname]["token"] = token
+        self.__config["instances"][hostname]["auth_type"] = "token"
+
+    def set_auth_command(self, hostname: str, command: str) -> None:
+        """
+        Sets the command that git-lab runs when it needs an access token
+        """
+        if hostname not in self.__config["instances"]:
+            self.__config["instances"][hostname] = {}
+
+        self.__config["instances"][hostname]["command"] = command
+        self.__config["instances"][hostname]["auth_type"] = "command"
 
     def instances(self) -> Dict[str, Any]:
         """

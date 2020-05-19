@@ -23,7 +23,11 @@ def parser(
         "login", help="Save a token for a GitLab instance"
     )
     login_parser.add_argument("--host", help="GitLab host (e.g invent.kde.org)", required=True)
-    login_parser.add_argument("--token", help="GitLab api private token", required=True)
+
+    group = login_parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--token", help="GitLab api private token")
+    group.add_argument("--command", help="Command to run when a token is needed")
+
     return login_parser
 
 
@@ -33,5 +37,10 @@ def run(args: argparse.Namespace) -> None:
     :param args: parsed arguments
     """
     config: Config = Config()
-    config.set_token(args.host, args.token)
+
+    if args.command:
+        config.set_auth_command(args.host, args.command)
+    else:
+        config.set_token(args.host, args.token)
+
     config.save()
