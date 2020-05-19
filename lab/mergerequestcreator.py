@@ -133,8 +133,10 @@ class MergeRequestCreator(RepositoryConnection):
         Creates a merge request with the changes from the current branch
         """
         e_input = EditorInput(
+            placeholder_title=self.local_repo().head.commit.summary,
+            placeholder_body=self.local_repo().head.commit.message.split("\n", 1)[1].strip(),
             extra_text="The markdown syntax for embedding images "
-            + "![description](/path/to/file) can be used to upload images."
+            + "![description](/path/to/file) can be used to upload images.",
         )
 
         try:
