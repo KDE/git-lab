@@ -10,7 +10,7 @@ import json
 import os
 import subprocess
 
-from typing import TextIO, Dict, Optional, Any, List
+from typing import TextIO, Dict, Optional, Any
 
 from lab.utils import Utils, LogType
 
@@ -89,10 +89,13 @@ class Config:
                 "auth_type" in self.__config["instances"][hostname]
                 and self.__config["instances"][hostname]["auth_type"] == "command"
             ):
-                token = subprocess.check_output(
-                    self.__config["instances"][hostname]["command"], shell=True
-                ).decode().strip()
-                return token
+                return (
+                    subprocess.check_output(
+                        self.__config["instances"][hostname]["command"], shell=True
+                    )
+                    .decode()
+                    .strip()
+                )
 
             # Token case
             token = self.__config["instances"][hostname]["token"]

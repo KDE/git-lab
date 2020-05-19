@@ -25,7 +25,7 @@ def parser(
     return fork_parser
 
 
-def run(args: argparse.Namespace) -> None:
+def run(args: argparse.Namespace) -> None:  # pylint: disable=unused-argument
     """
     run fork command
     :param args: parsed arguments
