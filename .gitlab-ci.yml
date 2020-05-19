@@ -1,0 +1,8 @@
+lint:
+  image: python:alpine
+  before_script:
+    - pip3 install -r requirements.txt
+    - apk add gcc musl-dev
+    - pip3 install pylint flake8 black mypy
+  script:
+    - ./scripts/lint.sh

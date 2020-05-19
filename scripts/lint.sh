@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 pylint lab
 flake8 lab --max-line-length 100
