@@ -9,7 +9,9 @@ Module containing classes for working with configuration
 import json
 import os
 
-from typing import TextIO, Dict, Optional
+from typing import TextIO, Dict, Optional, Any
+
+from lab.utils import Utils, LogType
 
 CONFIG_PATH = os.path.expanduser("~") + "/.gitlabconfig"
 
@@ -17,19 +19,53 @@ CONFIG_PATH = os.path.expanduser("~") + "/.gitlabconfig"
 class Config:
     """
     Class that can load and store settings
+
+    Config file layout:
+    {
+        "version": 1,
+        "instances": {
+            "gitlab.com": {
+                "auth_type": "token",
+                "token": "dkasjdlaksjdlkj",
+                "command": None
+            },
+            "invent.kde.org": {
+                "auth_type": "command",
+                "command": "gpg --decrypt",
+                "token": None
+            }
+        }
+    }
     """
 
     __file: TextIO
-    __config: Dict[str, str]
+    __config: Dict[str, Any]
+
+    def __migrate_to_version_1(self) -> None:
+        if "version" not in self.__config:
+            Utils.log(LogType.Info, "Migrating configuration file to version 1")
+
+            new_config: Dict[str, Any] = {"version": 1, "instances": {}}
+
+            for hostname in self.__config.keys():
+                new_config["instances"][hostname] = {
+                    "auth_type": "token",
+                    "token": self.__config[hostname],
+                }
+
+            self.__config = new_config
+            self.save()
 
     def __init__(self) -> None:
         if not os.path.isfile(CONFIG_PATH):
             file = open(CONFIG_PATH, "w+")
-            json.dump({}, file)
+            json.dump({"version": 1, "instances": {}}, file)
             file.close()
 
         self.__file = open(CONFIG_PATH, "r+")
         self.__config = json.load(self.__file)
+
+        self.__migrate_to_version_1()
 
     def save(self) -> None:
         """
@@ -41,18 +77,27 @@ class Config:
         self.__file.truncate()
         self.__file.close()
 
-    def token(self, instance: str) -> Optional[str]:
+    def token(self, hostname: str) -> Optional[str]:
         """
         Returns the token for a GitLab instance.
         If none was found, it returns None
         """
+        token: Any
         try:
-            return self.__config[instance]
+            token = self.__config["instances"][hostname]["token"]
         except KeyError:
             return None
 
-    def set_token(self, instance: str, token: str) -> None:
+        if isinstance(token, str):
+            return token
+
+        return None
+
+    def set_token(self, hostname: str, token: str) -> None:
         """
         Sets the token for a GitLab instance
         """
-        self.__config[instance] = token
+        if hostname not in self.__config["instances"]:
+            self.__config["instances"][hostname] = {}
+
+        self.__config["instances"][hostname]["token"] = token
