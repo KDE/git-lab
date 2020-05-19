@@ -9,7 +9,7 @@ Module containing classes for working with configuration
 import json
 import os
 
-from typing import TextIO, Dict, Optional, Any
+from typing import TextIO, Dict, Optional, Any, List
 
 from lab.utils import Utils, LogType
 
