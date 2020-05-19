@@ -20,7 +20,7 @@ def parser(
     """
 
     login_parser: argparse.ArgumentParser = subparsers.add_parser(
-        "login", help="Save a token for a GitLab token"
+        "login", help="Save a token for a GitLab instance"
     )
     login_parser.add_argument("--host", help="GitLab host (e.g invent.kde.org)", required=True)
     login_parser.add_argument("--token", help="GitLab api private token", required=True)
