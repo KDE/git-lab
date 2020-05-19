@@ -3,6 +3,15 @@ lint:
   before_script:
     - pip3 install -r requirements.txt
     - apk add gcc musl-dev
-    - pip3 install pylint flake8 black mypy
+    - pip3 install pylint flake8 black mypy pytest
   script:
     - ./scripts/lint.sh
+
+test:
+  image: python:alpine
+  before_script:
+    - pip3 install -r requirements.txt
+    - pip3 install pytest
+    - apk add git
+  script:
+    - pytest
