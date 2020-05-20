@@ -1,6 +1,7 @@
 # Git Lab
 
-Subcommand for git providing an arcanist-style interface to GitLab.
+Subcommand for git providing a command line interface to GitLab.
+An arc-style interface is also provided for a simplified transition from Phabricator to GitLab.
 
 ## Workflow
 
@@ -20,7 +21,7 @@ Do your changes
 
 ```
 git commit -m "Commit message"
-git lab diff
+git lab mr
 ```
 
 ### Listing merge requests
@@ -28,12 +29,12 @@ git lab diff
 * Merge requests for the current repository
 
 ```
-git lab list --project
+git lab mrs --project
 ```
 
 * Merge requests for the current GitLab instance (detected from the repository)
 ```
-git lab list
+git lab mrs
 ```
 
 * To only show merge requests in specific states, any combination of `--merged`, `--opened` and `--closed` can be added
@@ -41,12 +42,12 @@ git lab list
 ### Testing a merge request
 
 ```
-git lab patch ${NUMBER}
+git lab checkout ${NUMBER}
 ```
 
 ## Installation
 
 ```
 sudo pip3 install -r requirements.txt
-sudo setup.py install
+sudo python3 setup.py install
 ```
