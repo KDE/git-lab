@@ -30,7 +30,7 @@ class GitLabInstallCommand(install):
                     "help2man",
                     "--no-info",
                     "--version-string={}".format(VERSION),
-                    "git-lab",
+                    "./git-lab.py",
                     "--output",
                     "/usr/local/share/man/man1/git-lab.1",
                 ]
