@@ -11,6 +11,9 @@ An arc-style interface is also provided for a simplified transition from Phabric
 git lab login --host invent.kde.org --token ${YOUR_PRIVATE_TOKEN}
 ```
 
+Alternatively, instead of a token, you can also specify a command (`--command`) that returns the token.
+This way, you can store the token in a password manager or gpg-encrypted.
+
 ### Creating a merge request
 
 ```
@@ -45,9 +48,27 @@ git lab mrs
 git lab checkout ${NUMBER}
 ```
 
+### Searching for a project
+
+```
+git lab search ${NAME}
+```
+
+### Creating a snippet
+
+```
+git lab snippet ${FILENAME}
+```
+
+or
+
+```
+echo "Paste data" | git lab snippet
+```
+
 ## Installation
 
 ```
 sudo pip3 install -r requirements.txt
-sudo python3 setup.py install
+sudo ./setup.py install
 ```
