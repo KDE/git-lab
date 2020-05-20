@@ -8,7 +8,7 @@ Base class for creating connections to all known instances
 
 import sys
 
-from typing import List, Dict, Any
+from typing import List, Optional
 
 from gitlab import Gitlab
 from gitlab.exceptions import GitlabAuthenticationError
@@ -35,10 +35,13 @@ class AllInstancesConnection:  # pylint: disable=too-few-public-methods
             sys.exit(1)
 
     def __init__(self) -> None:
-        instances: Dict[str, Any] = self.__config.instances()
+        instances = self.__config.instances()
 
         for hostname in instances:
-            self.__login("https://" + hostname, instances[hostname]["token"])
+            token: Optional[str] = self.__config.token(hostname)
+
+            if isinstance(token, str):
+                self.__login("https://" + hostname, token)
 
     def connections(self) -> List[Gitlab]:
         """

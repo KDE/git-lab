@@ -10,7 +10,7 @@ import json
 import os
 import subprocess
 
-from typing import TextIO, Dict, Optional, Any
+from typing import TextIO, Dict, Optional, Any, Tuple
 
 from lab.utils import Utils, LogType
 
@@ -124,17 +124,13 @@ class Config:
         self.__config["instances"][hostname]["command"] = command
         self.__config["instances"][hostname]["auth_type"] = "command"
 
-    def instances(self) -> Dict[str, Any]:
+    def instances(self) -> Tuple[str, ...]:
         """
         Returns the list of known instances
         """
-        instances: Any
         try:
-            instances = self.__config["instances"]
+            return tuple(self.__config["instances"].keys())
         except KeyError:
-            return {}
+            return ()
 
-        if isinstance(instances, dict):
-            return instances
-
-        return {}
+        return ()
