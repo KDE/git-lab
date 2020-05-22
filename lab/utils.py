@@ -10,6 +10,8 @@ import subprocess
 
 import sys
 import os
+import shlex
+from typing import List
 
 from urllib.parse import ParseResult, urlparse, quote_plus
 from enum import IntEnum, auto
@@ -156,7 +158,7 @@ class Utils:
             sys.exit(1)
 
     @staticmethod
-    def editor() -> str:
+    def editor() -> List[str]:
         """
         return prefered user editor using git configuration
         """
@@ -172,7 +174,8 @@ class Utils:
                 editor = "editor"
             else:
                 editor = "vi"
-        return editor
+
+        return shlex.split(editor)
 
     @staticmethod
     def xdg_open(path: str) -> None:
