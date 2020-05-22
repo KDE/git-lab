@@ -34,6 +34,13 @@ def parser(
     create_parser.add_argument(
         "--target-branch", help="Use different target branch than master", default="master",
     )
+    create_parser.add_argument(
+        "--no-fork",
+        dest="fork",
+        default=True,
+        action="store_false",
+        help="Don't fork but push to the origin remote",
+    )
     return create_parser
 
 
@@ -43,8 +50,11 @@ def run(args: argparse.Namespace) -> None:
     :param args: parsed arguments
     """
     creator: MergeRequestCreator = MergeRequestCreator(args.target_branch)
-    creator.fork()
-    creator.push()
+
+    if args.fork:
+        creator.fork()
+
+    creator.push(args.fork)
     creator.create_mr()
 
 
@@ -94,11 +104,14 @@ class MergeRequestCreator(RepositoryConnection):
             str_id: str = Utils.str_id_for_url(self.local_repo().remotes.fork.url)
             self.__remote_fork = self.connection().projects.get(str_id)
 
-    def push(self) -> None:
+    def push(self, fork: bool) -> None:
         """
         pushes the local repository to the fork remote
         """
-        self.local_repo().remotes.fork.push()
+        if fork:
+            self.local_repo().remotes.fork.push()
+        else:
+            self.local_repo().remotes.origin.push()
 
     def __upload_assets(self, text: str) -> str:
         """
