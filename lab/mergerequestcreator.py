@@ -111,7 +111,7 @@ class MergeRequestCreator(RepositoryConnection):
         if fork:
             self.local_repo().remotes.fork.push()
         else:
-            self.local_repo().remotes.origin.push()
+            self.local_repo().remotes.origin.push(refspec=self.local_repo().head)
 
     def __upload_assets(self, text: str) -> str:
         """
