@@ -55,7 +55,7 @@ def run(args: argparse.Namespace) -> None:
         creator.fork()
 
     creator.push(args.fork)
-    creator.create_mr()
+    creator.create_mr(args.fork)
 
 
 class MergeRequestCreator(RepositoryConnection):
@@ -141,7 +141,7 @@ class MergeRequestCreator(RepositoryConnection):
 
         return output_text
 
-    def create_mr(self) -> None:
+    def create_mr(self, fork: bool) -> None:
         """
         Creates a merge request with the changes from the current branch
         """
@@ -152,8 +152,10 @@ class MergeRequestCreator(RepositoryConnection):
             + "![description](/path/to/file) can be used to upload images.",
         )
 
+        project: Project = self.__remote_fork if fork else self.remote_project()
+
         try:
-            merge_request = self.__remote_fork.mergerequests.create(
+            merge_request = project.mergerequests.create(
                 {
                     "source_branch": self.local_repo().active_branch.name,
                     "target_branch": self.__target_branch,
