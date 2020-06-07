@@ -50,6 +50,7 @@ def run(args: argparse.Namespace) -> None:
     :param args: parsed arguments
     """
     creator: MergeRequestCreator = MergeRequestCreator(args.target_branch)
+    creator.check(args.fork)
 
     if args.fork:
         creator.fork()
@@ -71,6 +72,25 @@ class MergeRequestCreator(RepositoryConnection):
     def __init__(self, target_branch: str) -> None:
         RepositoryConnection.__init__(self)
         self.__target_branch = target_branch
+
+    def check(self, fork: bool) -> None:
+        """
+        Run some sanity checks and warn the user if necessary
+        """
+        if (
+            not self.local_repo().active_branch.name.startswith("work/")
+            and not fork
+            and "invent.kde.org" in self.connection().url
+        ):
+            Utils.log(
+                LogType.Warning,
+                "Pushing to the upstream repository, but the branch name doesn't start with work/.",
+            )
+            print(
+                "This is not recommended on KDE infrastructure,",
+                "as it doesn't allow to rebase or force-push the branch.",
+                "To cancel, please press Ctrl + C.",
+            )
 
     def fork(self) -> None:
         """
