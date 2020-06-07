@@ -163,6 +163,7 @@ class MergeRequestCreator(RepositoryConnection):
                     "description": self.__upload_assets(e_input.body),
                     "target_project_id": self.remote_project().id,
                     "allow_maintainer_to_push": True,
+                    "remove_source_branch": True,
                 }
             )
             Utils.log(LogType.Info, "Created merge request at", merge_request.web_url)
