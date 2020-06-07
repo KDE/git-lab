@@ -36,6 +36,7 @@ def parser(
     )
     create_parser.add_argument(
         "--no-fork",
+        "-F",
         dest="fork",
         default=True,
         action="store_false",
