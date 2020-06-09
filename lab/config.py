@@ -9,12 +9,11 @@ Module containing classes for working with configuration
 import json
 import os
 import subprocess
+from enum import Enum, auto
 
 from typing import TextIO, Dict, Optional, Any, Tuple
 
 from lab.utils import Utils, LogType
-
-CONFIG_PATH = os.path.expanduser("~") + "/.gitlabconfig"
 
 
 class Config:
@@ -39,6 +38,7 @@ class Config:
     }
     """
 
+    config_path: str = os.path.expanduser("~") + "/.gitlabconfig"
     __file: TextIO
     __config: Dict[str, Any]
 
@@ -58,12 +58,12 @@ class Config:
             self.save()
 
     def __init__(self) -> None:
-        if not os.path.isfile(CONFIG_PATH):
-            file = open(CONFIG_PATH, "w+")
+        if not os.path.isfile(self.config_path):
+            file = open(self.config_path, "w+")
             json.dump({"version": 1, "instances": {}}, file)
             file.close()
 
-        self.__file = open(CONFIG_PATH, "r+")
+        self.__file = open(self.config_path, "r+")
         self.__config = json.load(self.__file)
 
         self.__migrate_to_version_1()
@@ -76,7 +76,7 @@ class Config:
         self.__file.seek(0)
         json.dump(self.__config, self.__file, indent=4)
         self.__file.truncate()
-        self.__file.close()
+        self.__file.flush()
 
     def token(self, hostname: str) -> Optional[str]:
         """
@@ -134,3 +134,62 @@ class Config:
             return ()
 
         return ()
+
+class Workflow(Enum):
+    """
+    Different values for workflow
+    """
+    # Never reorder this values! The config file stores the actual numbers.
+    fork = auto()  # push merge request branches to a fork of the upstream repository
+    workbranch = auto()  # push merge request branches to the upstream repository
+
+class RepositoryConfig:
+    """
+    Per-repository config file
+    """
+
+    config_path: str = os.getcwd() + "/.git/gitlabconfig"
+    __file: TextIO
+    __config: Dict[str, Any]
+
+    def __init__(self) -> None:
+        if not os.path.isfile(self.config_path):
+            file = open(self.config_path, "w+")
+            json.dump({}, file)
+            file.close()
+
+        self.__file = open(self.config_path, "r+")
+        self.__config = json.load(self.__file)
+
+    def workflow(self) -> Workflow:
+        """
+        get the workflow used for the repository. Defaults to RepositoryConfig.workflow.fork
+        """
+        value: Any
+        try:
+            value = self.__config["workflow"]
+        except KeyError:
+            return Workflow.fork
+
+        return Workflow(value)
+
+    def set_workflow(self, workflow: Workflow) -> None:
+        """
+        Set the workflow to one of RepositoryConfig.Workflow
+        """
+
+        # Make sure not to corrupt the config file with invalid numbers
+        if not isinstance(workflow, Workflow):
+            raise TypeError()
+
+        self.__config["workflow"] = workflow.value
+
+    def save(self) -> None:
+        """
+        Save the config to disk. This function has to be manually called,
+        otherwise the config won't be saved.
+        """
+        self.__file.seek(0)
+        json.dump(self.__config, self.__file, indent=4)
+        self.__file.truncate()
+        self.__file.flush()

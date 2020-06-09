@@ -14,13 +14,13 @@ import shlex
 from typing import List
 
 from urllib.parse import ParseResult, urlparse, quote_plus
-from enum import IntEnum, auto
+from enum import Enum, auto
 
 from git import Repo
 from git.exc import InvalidGitRepositoryError
 
 
-class LogType(IntEnum):
+class LogType(Enum):
     """
     Enum representing the type of log message
     """
