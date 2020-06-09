@@ -142,8 +142,8 @@ class Workflow(Enum):
     """
 
     # Never reorder this values! The config file stores the actual numbers.
-    fork = auto()  # push merge request branches to a fork of the upstream repository
-    workbranch = auto()  # push merge request branches to the upstream repository
+    Fork = auto()  # push merge request branches to a fork of the upstream repository
+    Workbranch = auto()  # push merge request branches to the upstream repository
 
 
 class RepositoryConfig:
@@ -172,7 +172,7 @@ class RepositoryConfig:
         try:
             value = self.__config["workflow"]
         except KeyError:
-            return Workflow.fork
+            return Workflow.Fork
 
         return Workflow(value)
 

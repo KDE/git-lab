@@ -44,7 +44,7 @@ def run(args: argparse.Namespace) -> None:
     :param args: parsed arguments
     """
     # To fork or not to fork
-    fork: bool = (RepositoryConfig().workflow() == Workflow.fork)
+    fork: bool = (RepositoryConfig().workflow() == Workflow.Fork)
     creator: MergeRequestCreator = MergeRequestCreator(args.target_branch, fork)
     creator.check()
 

@@ -44,7 +44,7 @@ def run(args: argparse.Namespace) -> None:
     """
     repository_config = RepositoryConfig()
     if args.fork:
-        repository_config.set_workflow(Workflow.fork)
+        repository_config.set_workflow(Workflow.Fork)
     elif args.workbranch:
-        repository_config.set_workflow(Workflow.workbranch)
+        repository_config.set_workflow(Workflow.Workbranch)
     repository_config.save()
