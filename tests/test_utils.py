@@ -41,5 +41,12 @@ class UtilsTest(unittest.TestCase):
 
         self.assertEqual(str_id, "KDE%2Fkaidan")
 
+    def test_ssh_url_from_http(self):
+        url: str = "http://invent.kde.org/KDE/kaidan"
+
+        ssh_url: str = Utils.ssh_url_from_http(url)
+
+        self.assertEqual(ssh_url, "ssh://git@invent.kde.org/KDE/kaidan")
+
 if __name__ == "__main__":
     unittest.main()
