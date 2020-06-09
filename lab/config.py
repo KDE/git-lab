@@ -135,13 +135,16 @@ class Config:
 
         return ()
 
+
 class Workflow(Enum):
     """
     Different values for workflow
     """
+
     # Never reorder this values! The config file stores the actual numbers.
     fork = auto()  # push merge request branches to a fork of the upstream repository
     workbranch = auto()  # push merge request branches to the upstream repository
+
 
 class RepositoryConfig:
     """

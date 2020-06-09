@@ -16,6 +16,7 @@ from gitlab.v4.objects import Project
 from gitlab.exceptions import GitlabCreateError
 
 from lab.repositoryconnection import RepositoryConnection
+from lab.config import RepositoryConfig, Workflow
 from lab.utils import Utils, LogType
 from lab.editorinput import EditorInput
 
@@ -34,14 +35,6 @@ def parser(
     create_parser.add_argument(
         "--target-branch", help="Use different target branch than master", default="master",
     )
-    create_parser.add_argument(
-        "--no-fork",
-        "-F",
-        dest="fork",
-        default=True,
-        action="store_false",
-        help="Don't fork but push to the origin remote",
-    )
     return create_parser
 
 
@@ -50,14 +43,16 @@ def run(args: argparse.Namespace) -> None:
     run merge request creation command
     :param args: parsed arguments
     """
-    creator: MergeRequestCreator = MergeRequestCreator(args.target_branch)
-    creator.check(args.fork)
+    # To fork or not to fork
+    fork: bool = (RepositoryConfig().workflow() == Workflow.fork)
+    creator: MergeRequestCreator = MergeRequestCreator(args.target_branch, fork)
+    creator.check()
 
-    if args.fork:
+    if fork:
         creator.fork()
 
-    creator.push(args.fork)
-    creator.create_mr(args.fork)
+    creator.push()
+    creator.create_mr()
 
 
 class MergeRequestCreator(RepositoryConnection):
@@ -69,18 +64,20 @@ class MergeRequestCreator(RepositoryConnection):
     # private
     __remote_fork: Project
     __target_branch: str
+    __fork: bool
 
-    def __init__(self, target_branch: str) -> None:
+    def __init__(self, target_branch: str, fork: bool) -> None:
         RepositoryConnection.__init__(self)
         self.__target_branch = target_branch
+        self.__fork = fork
 
-    def check(self, fork: bool) -> None:
+    def check(self) -> None:
         """
         Run some sanity checks and warn the user if necessary
         """
         if (
             not self.local_repo().active_branch.name.startswith("work/")
-            and not fork
+            and not self.__fork
             and "invent.kde.org" in self.connection().url
         ):
             Utils.log(
@@ -125,11 +122,11 @@ class MergeRequestCreator(RepositoryConnection):
             str_id: str = Utils.str_id_for_url(self.local_repo().remotes.fork.url)
             self.__remote_fork = self.connection().projects.get(str_id)
 
-    def push(self, fork: bool) -> None:
+    def push(self) -> None:
         """
         pushes the local repository to the fork remote
         """
-        if fork:
+        if self.__fork:
             self.local_repo().remotes.fork.push()
         else:
             self.local_repo().remotes.origin.push(refspec=self.local_repo().head)
@@ -162,7 +159,7 @@ class MergeRequestCreator(RepositoryConnection):
 
         return output_text
 
-    def create_mr(self, fork: bool) -> None:
+    def create_mr(self) -> None:
         """
         Creates a merge request with the changes from the current branch
         """
@@ -173,7 +170,7 @@ class MergeRequestCreator(RepositoryConnection):
             + "![description](/path/to/file) can be used to upload images.",
         )
 
-        project: Project = self.__remote_fork if fork else self.remote_project()
+        project: Project = self.__remote_fork if self.__fork else self.remote_project()
 
         try:
             merge_request = project.mergerequests.create(

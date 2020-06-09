@@ -22,6 +22,7 @@ from lab import (
     fork,
     issues,
     snippet,
+    workflow,
 )
 
 
@@ -45,6 +46,7 @@ class Parser:  # pylint: disable=R0903
             fork,
             issues,
             snippet,
+            workflow,
         ]
         for command in command_list:
             parser = command.parser(self.subparsers)
