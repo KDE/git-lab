@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 
 from gitlab import Gitlab
 from gitlab.v4.objects import Project
-from gitlab.exceptions import GitlabAuthenticationError
+from gitlab.exceptions import GitlabAuthenticationError, GitlabGetError
 from git import Repo
 
 from lab.utils import Utils, LogType
@@ -76,8 +76,8 @@ class RepositoryConnection:
             self.__connection: Gitlab = Gitlab(hostname, private_token=token)
             self.__gitlab_token = token
             self.__connection.auth()
-        except GitlabAuthenticationError:
-            Utils.log(LogType.Error, "Could not log into GitLab")
+        except (GitlabAuthenticationError, GitlabGetError):
+            Utils.log(LogType.Error, "Could not log into GitLab: {}".format(hostname))
             sys.exit(1)
 
     def connection(self) -> Gitlab:
