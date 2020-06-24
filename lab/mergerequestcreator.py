@@ -13,7 +13,7 @@ import os
 from typing import List, Any
 
 from gitlab.v4.objects import Project
-from gitlab.exceptions import GitlabCreateError
+from gitlab.exceptions import GitlabCreateError, GitlabGetError
 
 from lab.repositoryconnection import RepositoryConnection
 from lab.config import RepositoryConfig, Workflow
@@ -99,9 +99,14 @@ class MergeRequestCreator(RepositoryConnection):
         if "fork" in self.local_repo().remotes:
             # Fork already exists
             fork_str_id: str = Utils.str_id_for_url(self.local_repo().remotes.fork.url)
-            # TODO handle when fork is not present on remote
-            self.__remote_fork = self.connection().projects.get(fork_str_id)
-            return
+
+            # Try to retrieve the remote project object, if it doesn't exist on the server,
+            # go on with the logic to create a new fork.
+            try:
+                self.__remote_fork = self.connection().projects.get(fork_str_id)
+                return
+            except GitlabGetError:
+                pass
 
         try:
             self.__remote_fork = self.remote_project().forks.create({})
