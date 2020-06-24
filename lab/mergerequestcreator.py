@@ -95,6 +95,14 @@ class MergeRequestCreator(RepositoryConnection):
         Try to create a fork of the remote repository.
         If the fork already exists, no new fork will be created.
         """
+
+        if "fork" in self.local_repo().remotes:
+            # Fork already exists
+            str_id: str = Utils.str_id_for_url(self.local_repo().remotes.fork.url)
+            # TODO handle when fork is not present on remote
+            self.__remote_fork = self.connection().projects.get(str_id)
+            return
+
         try:
             self.__remote_fork = self.remote_project().forks.create({})
 
@@ -133,7 +141,7 @@ class MergeRequestCreator(RepositoryConnection):
 
     def __upload_assets(self, text: str) -> str:
         """
-        Scans the text for local file pathes, uploads the files and returns
+        Scans the text for local file paths, uploads the files and returns
         the text modified to load the files from the uploaded urls
         """
         find_expr = re.compile(r"!\[[^\[\(]*\]\([^\[\(]*\)")
