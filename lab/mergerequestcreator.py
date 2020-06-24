@@ -98,9 +98,9 @@ class MergeRequestCreator(RepositoryConnection):
 
         if "fork" in self.local_repo().remotes:
             # Fork already exists
-            str_id: str = Utils.str_id_for_url(self.local_repo().remotes.fork.url)
+            fork_str_id: str = Utils.str_id_for_url(self.local_repo().remotes.fork.url)
             # TODO handle when fork is not present on remote
-            self.__remote_fork = self.connection().projects.get(str_id)
+            self.__remote_fork = self.connection().projects.get(fork_str_id)
             return
 
         try:
