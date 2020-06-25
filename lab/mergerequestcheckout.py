@@ -12,6 +12,7 @@ import sys
 from gitlab.v4.objects import ProjectMergeRequest
 
 from lab.repositoryconnection import RepositoryConnection
+from lab.utils import Utils
 
 
 def parser(
@@ -64,12 +65,13 @@ class MergeRequestCheckout(RepositoryConnection):
         )[0]
         if self.__mr.source_branch in self.local_repo().refs:
             # Make sure not to overwrite local changes
-            answer: str = input(
-                'Branch "{}" already exists locally, do you want to overwrite it? (y/n)\n'.format(
+            overwrite = Utils.ask_bool(
+                'Branch "{}" already exists locally, do you want to overwrite it?'.format(
                     self.__mr.source_branch
                 )
             )
-            if answer != "y":
+
+            if not overwrite:
                 print("Aborting")
                 sys.exit(1)
 

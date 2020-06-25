@@ -184,3 +184,16 @@ class Utils:
         :param path: path to open
         """
         subprocess.call(("xdg-open", path))
+
+    @staticmethod
+    def ask_bool(question: str) -> bool:
+        """
+        Ask a yes or no question
+        :param question: text for the question
+        :return: whether the user answered yes
+        """
+        answer: str = input("{} (y/n)\n".format(question))
+        if answer != "y":
+            return False
+
+        return True

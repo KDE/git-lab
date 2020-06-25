@@ -9,8 +9,12 @@ Module containing classes for creating merge requests
 import argparse
 import re
 import os
+import subprocess
+import sys
 
 from typing import List, Any
+
+from git import IndexFile
 
 from gitlab.v4.objects import Project, ProjectMergeRequest
 from gitlab.exceptions import GitlabCreateError, GitlabGetError
@@ -47,6 +51,7 @@ def run(args: argparse.Namespace) -> None:
     fork: bool = (RepositoryConfig().workflow() == Workflow.Fork)
     creator: MergeRequestCreator = MergeRequestCreator(args.target_branch, fork)
     creator.check()
+    creator.commit()
 
     if fork:
         creator.fork()
@@ -89,6 +94,25 @@ class MergeRequestCreator(RepositoryConnection):
                 "as it doesn't allow to rebase or force-push the branch.",
                 "To cancel, please press Ctrl + C.",
             )
+
+    def commit(self) -> None:
+        """
+        Determine whether there are uncommitted changes, and ask the user what to do about them
+        """
+
+        index: IndexFile = self.local_repo().index
+        if len(index.diff("HEAD")) > 0:
+            Utils.log(LogType.Info, "You have staged but uncommited changes.")
+            create_commit: bool = Utils.ask_bool("do you want to create a new commit?")
+
+            if create_commit:
+                # We can't use self.local_repo().git.commit() here, as it would
+                # start the editor in the background
+                try:
+                    subprocess.check_call(["git", "commit"])
+                except subprocess.CalledProcessError:
+                    Utils.log(LogType.Error, "git exited with an error code")
+                    sys.exit(1)
 
     def fork(self) -> None:
         """
