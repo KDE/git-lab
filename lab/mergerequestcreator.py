@@ -118,19 +118,16 @@ class MergeRequestCreator(RepositoryConnection):
 
             self.local_repo().create_remote("fork", url=self.__remote_fork.ssh_url_to_repo)
         except GitlabCreateError:
-            if "fork" in self.local_repo().remotes:
-                Utils.log(LogType.Info, "Fork already exists, continuing")
-            else:
-                Utils.log(
-                    LogType.Info,
-                    "Fork exists, but no fork remote exists locally, trying to guess the url",
-                )
-                # Detect ssh url
-                url = Utils.ssh_url_from_http(
-                    self.connection().user.web_url + "/" + self.remote_project().path
-                )
+            Utils.log(
+                LogType.Info,
+                "Fork exists, but no fork remote exists locally, trying to guess the url",
+            )
+            # Detect ssh url
+            url = Utils.ssh_url_from_http(
+                self.connection().user.web_url + "/" + self.remote_project().path
+            )
 
-                self.local_repo().create_remote("fork", url=url)
+            self.local_repo().create_remote("fork", url=url)
 
             str_id: str = Utils.str_id_for_url(self.local_repo().remotes.fork.url)
             self.__remote_fork = self.connection().projects.get(str_id)
@@ -202,19 +199,15 @@ class MergeRequestCreator(RepositoryConnection):
 
         project: Project = self.__remote_fork if self.__fork else self.remote_project()
 
-        try:
-            merge_request = project.mergerequests.create(
-                {
-                    "source_branch": self.local_repo().active_branch.name,
-                    "target_branch": self.__target_branch,
-                    "title": e_input.title,
-                    "description": self.__upload_assets(e_input.body),
-                    "target_project_id": self.remote_project().id,
-                    "allow_maintainer_to_push": True,
-                    "remove_source_branch": True,
-                }
-            )
-            Utils.log(LogType.Info, "Created merge request at", merge_request.web_url)
-        except GitlabCreateError as error:
-            if error.response_code == 409:
-                Utils.log(LogType.Info, "Merge request already exists")
+        merge_request = project.mergerequests.create(
+            {
+                "source_branch": self.local_repo().active_branch.name,
+                "target_branch": self.__target_branch,
+                "title": e_input.title,
+                "description": self.__upload_assets(e_input.body),
+                "target_project_id": self.remote_project().id,
+                "allow_maintainer_to_push": True,
+                "remove_source_branch": True,
+            }
+        )
+        Utils.log(LogType.Info, "Created merge request at", merge_request.web_url)
