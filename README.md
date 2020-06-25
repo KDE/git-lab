@@ -83,5 +83,5 @@ pytest
 
 ### Run linter
 ```
-pylint --rcfile=pylintrc lab/*.py
+./scripts/lint.sh
 ```
