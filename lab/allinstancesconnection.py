@@ -22,7 +22,7 @@ class AllInstancesConnection:  # pylint: disable=too-few-public-methods
     Base class that connects to all known instances
     """
 
-    __config: Config = Config()
+    __config: Config
     __connections: List[Gitlab] = []
 
     def __login(self, hostname: str, token: str) -> None:
@@ -35,6 +35,7 @@ class AllInstancesConnection:  # pylint: disable=too-few-public-methods
             sys.exit(1)
 
     def __init__(self) -> None:
+        self.__config = Config()
         instances = self.__config.instances()
 
         for hostname in instances:

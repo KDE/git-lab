@@ -31,10 +31,11 @@ class RepositoryConnection:
     __local_repo: Repo
     __remote_project: Project
     __gitlab_token: str
-    __config: Config = Config()
+    __config: Config
 
     def __init__(self) -> None:
         self.__local_repo = Utils.get_cwd_repo()
+        self.__config = Config()
 
         try:
             origin = self.__local_repo.remote(name="origin")
