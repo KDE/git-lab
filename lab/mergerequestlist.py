@@ -40,6 +40,9 @@ def parser(
     lister_parser.add_argument(
         "--closed", help="Show closed merge requests", action="store_true",
     )
+    lister_parser.add_argument(
+        "--url", help="Show web url of merge requests (default false)", action="store_true",
+    )
     return lister_parser
 
 
@@ -48,7 +51,7 @@ def run(args: argparse.Namespace) -> None:
     run merge request list command
     :param args: parsed arguments
     """
-    lister = MergeRequestList(args.project, args.merged, args.opened, args.closed)
+    lister = MergeRequestList(args.project, args.merged, args.opened, args.closed, args.url)
     lister.print_formatted_list()
 
 
@@ -61,17 +64,23 @@ class MergeRequestList(RepositoryConnection):
     merged: bool = True
     opened: bool = True
     closed: bool = True
+    show_url: bool = True
 
-    def __init__(self, for_project: bool, merged: bool, opened: bool, closed: bool) -> None:
+    def __init__(  # pylint: disable=too-many-arguments
+        self, for_project: bool, merged: bool, opened: bool, closed: bool, show_url: bool
+    ) -> None:
         RepositoryConnection.__init__(self)
         self.for_project = for_project
+        self.show_url = show_url
+
         if not merged and not opened and not closed:
             return
+
         self.merged = merged
         self.opened = opened
         self.closed = closed
 
-    def print_formatted_list(self) -> None:
+    def print_formatted_list(self) -> None:  # pylint: disable=too-many-branches
         """
         prints the list of merge requests to the terminal formatted as a table
         """
@@ -96,7 +105,15 @@ class MergeRequestList(RepositoryConnection):
 
         for merge_request in merge_requests:
             row: List[str] = []
-            row.append(TextFormatting.bold + merge_request.references["full"] + TextFormatting.end)
+
+            # Show merge request reference or url according to command line options
+            if self.show_url:
+                row.append(merge_request.web_url)
+            else:
+                row.append(
+                    TextFormatting.bold + merge_request.references["full"] + TextFormatting.end
+                )
+
             row.append(merge_request.title)
 
             if merge_request.state == "merged":
