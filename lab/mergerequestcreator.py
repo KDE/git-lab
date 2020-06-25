@@ -12,7 +12,7 @@ import os
 
 from typing import List, Any
 
-from gitlab.v4.objects import Project
+from gitlab.v4.objects import Project, ProjectMergeRequest
 from gitlab.exceptions import GitlabCreateError, GitlabGetError
 
 from lab.repositoryconnection import RepositoryConnection
@@ -176,6 +176,23 @@ class MergeRequestCreator(RepositoryConnection):
         """
         Creates a merge request with the changes from the current branch
         """
+
+        mrs: List[ProjectMergeRequest] = self.remote_project().mergerequests.list(
+            source_branch=self.local_repo().active_branch.name,
+            target_branch=self.__target_branch,
+            target_project_id=self.remote_project().id,
+        )
+
+        if len(mrs) > 0:
+            merge_request = mrs[0]
+            Utils.log(
+                LogType.Info,
+                'Merge request already exists "{}": {}'.format(
+                    merge_request.title, merge_request.web_url
+                ),
+            )
+            return
+
         e_input = EditorInput(
             placeholder_title=self.local_repo().head.commit.summary,
             placeholder_body=self.local_repo().head.commit.message.split("\n", 1)[1].strip(),
