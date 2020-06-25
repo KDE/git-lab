@@ -11,6 +11,7 @@ An arc-style interface is also provided for a simplified transition from Phabric
 git lab login --host invent.kde.org --token ${YOUR_PRIVATE_TOKEN}
 ```
 
+Your token is saved in the json file `~/.config/gitlabconfig` by default.
 Alternatively, instead of a token, you can also specify a command (`--command`) that returns the token.
 This way, you can store the token in a password manager or gpg-encrypted.
 
@@ -71,4 +72,16 @@ echo "Paste data" | git lab snippet
 ```
 sudo pip3 install -r requirements.txt
 sudo ./setup.py install
+```
+
+## Contributing
+
+### Run tests
+```
+pytest
+```
+
+### Run linter
+```
+pylint --rcfile=pylintrc lab/*.py
 ```

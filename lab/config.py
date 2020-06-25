@@ -13,6 +13,7 @@ from enum import Enum, auto
 
 from typing import TextIO, Dict, Optional, Any, Tuple
 
+from appdirs import user_config_dir
 from lab.utils import Utils, LogType
 
 
@@ -38,7 +39,8 @@ class Config:
     }
     """
 
-    config_path: str = os.path.expanduser("~") + "/.gitlabconfig"
+    config_path: str = user_config_dir("gitlabconfig")
+
     __file: TextIO
     __config: Dict[str, Any]
 
@@ -59,9 +61,17 @@ class Config:
 
     def __init__(self) -> None:
         if not os.path.isfile(self.config_path):
-            file = open(self.config_path, "w+")
-            json.dump({"version": 1, "instances": {}}, file)
-            file.close()
+            old_config_path: str = os.path.expanduser("~/.gitlabconfig")
+            if os.path.isfile(old_config_path):
+                if not os.path.isdir(user_config_dir()):
+                    os.mkdir(user_config_dir())
+                os.rename(old_config_path, self.config_path)
+            else:
+                if not os.path.isdir(user_config_dir()):
+                    os.mkdir(user_config_dir())
+                file = open(self.config_path, "w+")
+                json.dump({"version": 1, "instances": {}}, file)
+                file.close()
 
         self.__file = open(self.config_path, "r+")
         self.__config = json.load(self.__file)

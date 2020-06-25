@@ -1,4 +1,5 @@
 python-gitlab
 GitPython
+appdirs
 
 
