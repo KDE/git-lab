@@ -9,6 +9,7 @@ Base module for the lab package
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import argparse
+import traceback
 
 from typing import List, Any
 
@@ -24,6 +25,8 @@ from lab import (
     snippet,
     workflow,
 )
+
+from lab.utils import Utils, LogType
 
 
 class Parser:  # pylint: disable=R0903
@@ -70,7 +73,20 @@ def main() -> None:
     Entry point
     """
     parser: Parser = Parser()
-    parser.parse()
+
+    try:
+        parser.parse()
+    except:  # noqa: E722
+        print()
+        Utils.log(LogType.Error, "git-lab crashed. This should not happen.")
+        print(
+            "Please help us to fix it by opening an issue on",
+            "https://invent.kde.org/sdk/git-lab/-/issues.",
+            "Make sure to include the information below:",
+            "\n```\n",
+            traceback.format_exc(),
+            "```",
+        )
 
 
 if __name__ == "__main__":
