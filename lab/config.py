@@ -8,6 +8,7 @@ Module containing classes for working with configuration
 
 import json
 import os
+import sys
 import subprocess
 from enum import Enum, auto
 
@@ -161,11 +162,18 @@ class RepositoryConfig:
     Per-repository config file
     """
 
-    config_path: str = os.getcwd() + "/.git/gitlabconfig"
+    config_path: str
     __file: TextIO
     __config: Dict[str, Any]
 
     def __init__(self) -> None:
+        repository_path: Optional[str] = Utils.find_dotgit(os.getcwd())
+        if repository_path:
+            self.config_path = repository_path + os.path.sep + ".git" + os.path.sep + "gitlabconfig"
+        else:
+            Utils.log(LogType.Error, "Current directory is not a git repository")
+            sys.exit(1)
+
         if not os.path.isfile(self.config_path):
             file = open(self.config_path, "w+")
             json.dump({}, file)

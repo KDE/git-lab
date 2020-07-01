@@ -11,7 +11,7 @@ import subprocess
 import sys
 import os
 import shlex
-from typing import List
+from typing import List, Optional
 
 from urllib.parse import ParseResult, urlparse, quote_plus
 from enum import Enum, auto
@@ -148,11 +148,11 @@ class Utils:
     @staticmethod
     def get_cwd_repo() -> Repo:
         """
-        Creates a Repo object for the current directory.
-        If it is not a git repository, an error is shown.
+        Creates a Repo object from one of the parent directories of the current directories.
+        If it can not find a git repository, an error is shown.
         """
         try:
-            return Repo(os.getcwd())
+            return Repo(Utils.find_dotgit(os.getcwd()))
         except InvalidGitRepositoryError:
             Utils.log(LogType.Error, "Current directory is not a git repository")
             sys.exit(1)
@@ -197,3 +197,23 @@ class Utils:
             return False
 
         return True
+
+    @staticmethod
+    def find_dotgit(path: str) -> Optional[str]:
+        """
+        Finds the parent directory containing .git, and returns it
+        :param: path to start climbing from
+        :return: resulting path
+        """
+        abspath = os.path.abspath(path)
+
+        if ".git" in os.listdir(abspath):
+            return abspath
+
+        parent_dir: str = os.path.abspath(abspath + os.path.sep + os.path.pardir)
+
+        # No parent dir exists, we are at the root filesystem
+        if os.path.samefile(parent_dir, path):
+            return None
+
+        return Utils.find_dotgit(parent_dir)
