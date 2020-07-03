@@ -192,7 +192,7 @@ class Utils:
         :param question: text for the question
         :return: whether the user answered yes
         """
-        answer: str = input("{} (y/n)\n".format(question))
+        answer: str = input("{} [y/n] ".format(question))
         if answer != "y":
             return False
 
