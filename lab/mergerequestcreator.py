@@ -211,7 +211,7 @@ class MergeRequestCreator(RepositoryConnection):
             merge_request = mrs[0]
             Utils.log(
                 LogType.Info,
-                'Merge request already exists "{}": {}'.format(
+                'Updating existing merge request "{}" at: {}'.format(
                     merge_request.title, merge_request.web_url
                 ),
             )
