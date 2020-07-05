@@ -193,10 +193,10 @@ class Utils:
         :return: whether the user answered yes
         """
         answer: str = input("{} [y/n] ".format(question))
-        if answer != "y":
-            return False
+        if answer == "y":
+            return True
 
-        return True
+        return False
 
     @staticmethod
     def find_dotgit(path: str) -> Optional[str]:
