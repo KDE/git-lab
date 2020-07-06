@@ -81,9 +81,9 @@ class MergeRequestCreator(RepositoryConnection):
         Run some sanity checks and warn the user if necessary
         """
         if (
-            not self.local_repo().active_branch.name.startswith("work/")
+            not self._local_repo.active_branch.name.startswith("work/")
             and not self.__fork
-            and "invent.kde.org" in self.connection().url
+            and "invent.kde.org" in self._connection.url
         ):
             Utils.log(
                 LogType.Warning,
@@ -100,7 +100,7 @@ class MergeRequestCreator(RepositoryConnection):
         Determine whether there are uncommitted changes, and ask the user what to do about them
         """
 
-        index: IndexFile = self.local_repo().index
+        index: IndexFile = self._local_repo.index
         if len(index.diff("HEAD")) > 0:
             Utils.log(LogType.Info, "You have staged but uncommited changes.")
             create_commit: bool = Utils.ask_bool("do you want to create a new commit?")
@@ -120,27 +120,27 @@ class MergeRequestCreator(RepositoryConnection):
         If the fork already exists, no new fork will be created.
         """
 
-        if "fork" in self.local_repo().remotes:
+        if "fork" in self._local_repo.remotes:
             # Fork already exists
-            fork_str_id: str = Utils.str_id_for_url(self.local_repo().remotes.fork.url)
+            fork_str_id: str = Utils.str_id_for_url(self._local_repo.remotes.fork.url)
 
             # Try to retrieve the remote project object, if it doesn't exist on the server,
             # go on with the logic to create a new fork.
             try:
-                self.__remote_fork = self.connection().projects.get(fork_str_id)
+                self.__remote_fork = self._connection.projects.get(fork_str_id)
                 return
             except GitlabGetError:
                 pass
 
         try:
-            self.__remote_fork = self.remote_project().forks.create({})
+            self.__remote_fork = self._remote_project.forks.create({})
 
             # WORKAROUND: the return of create() is unreliable,
             # and sometimes doesn't allow to create merge requests,
             # so request a fresh project object.
-            self.__remote_fork = self.connection().projects.get(self.__remote_fork.id)
+            self.__remote_fork = self._connection.projects.get(self.__remote_fork.id)
 
-            self.local_repo().create_remote("fork", url=self.__remote_fork.ssh_url_to_repo)
+            self._local_repo.create_remote("fork", url=self.__remote_fork.ssh_url_to_repo)
         except GitlabCreateError:
             Utils.log(
                 LogType.Info,
@@ -148,13 +148,13 @@ class MergeRequestCreator(RepositoryConnection):
             )
             # Detect ssh url
             url = Utils.ssh_url_from_http(
-                self.connection().user.web_url + "/" + self.remote_project().path
+                self._connection.user.web_url + "/" + self._remote_project.path
             )
 
-            self.local_repo().create_remote("fork", url=url)
+            self._local_repo.create_remote("fork", url=url)
 
-            str_id: str = Utils.str_id_for_url(self.local_repo().remotes.fork.url)
-            self.__remote_fork = self.connection().projects.get(str_id)
+            str_id: str = Utils.str_id_for_url(self._local_repo.remotes.fork.url)
+            self.__remote_fork = self._connection.projects.get(str_id)
 
     def push(self) -> None:
         """
@@ -162,11 +162,11 @@ class MergeRequestCreator(RepositoryConnection):
         """
         remote: Remote
         if self.__fork:
-            remote = self.local_repo().remotes.fork
+            remote = self._local_repo.remotes.fork
             remote.push(force=True)
         else:
-            remote = self.local_repo().remotes.origin
-            remote.push(refspec=self.local_repo().head, force=True)
+            remote = self._local_repo.remotes.origin
+            remote.push(refspec=self._local_repo.head, force=True)
 
     def __upload_assets(self, text: str) -> str:
         """
@@ -188,7 +188,7 @@ class MergeRequestCreator(RepositoryConnection):
 
                 filename: str = os.path.basename(image)
                 try:
-                    uploaded_file = self.remote_project().upload(filename, filepath=image)
+                    uploaded_file = self._remote_project.upload(filename, filepath=image)
                     output_text = output_text.replace(image, uploaded_file["url"])
                 except FileNotFoundError:
                     Utils.log(LogType.Warning, "Failed to upload image", image)
@@ -201,10 +201,10 @@ class MergeRequestCreator(RepositoryConnection):
         Creates a merge request with the changes from the current branch
         """
 
-        mrs: List[ProjectMergeRequest] = self.remote_project().mergerequests.list(
-            source_branch=self.local_repo().active_branch.name,
+        mrs: List[ProjectMergeRequest] = self._remote_project.mergerequests.list(
+            source_branch=self._local_repo.active_branch.name,
             target_branch=self.__target_branch,
-            target_project_id=self.remote_project().id,
+            target_project_id=self._remote_project.id,
         )
 
         if len(mrs) > 0:
@@ -218,21 +218,21 @@ class MergeRequestCreator(RepositoryConnection):
             return
 
         e_input = EditorInput(
-            placeholder_title=self.local_repo().head.commit.summary,
-            placeholder_body=self.local_repo().head.commit.message.split("\n", 1)[1].strip(),
+            placeholder_title=self._local_repo.head.commit.summary,
+            placeholder_body=self._local_repo.head.commit.message.split("\n", 1)[1].strip(),
             extra_text="The markdown syntax for embedding images "
             + "![description](/path/to/file) can be used to upload images.",
         )
 
-        project: Project = self.__remote_fork if self.__fork else self.remote_project()
+        project: Project = self.__remote_fork if self.__fork else self._remote_project
 
         merge_request = project.mergerequests.create(
             {
-                "source_branch": self.local_repo().active_branch.name,
+                "source_branch": self._local_repo.active_branch.name,
                 "target_branch": self.__target_branch,
                 "title": e_input.title,
                 "description": self.__upload_assets(e_input.body),
-                "target_project_id": self.remote_project().id,
+                "target_project_id": self._remote_project.id,
                 "allow_maintainer_to_push": True,
                 "remove_source_branch": True,
             }

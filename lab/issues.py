@@ -102,21 +102,21 @@ class IssuesList(RepositoryConnection):
             state = "closed"
         args["state"] = state
 
-        issues: List[ProjectIssue]
+        issues: List[ProjectIssue] = []
         if not self.for_project and self.assigned:
             # List issues all over the instance assigned to me
             args["scope"] = "assigned_to_me"
-            issues = self.connection().issues.list(**args)
+            issues = self._connection.issues.list(**args)
         elif not self.for_project and not self.assigned:
             # Request both created and assigned issues on the whole instance
             args["scope"] = "created_by_me"
-            issues = self.connection().issues.list(**args)
+            issues = self._connection.issues.list(**args)
             args["scope"] = "assigned_to_me"
-            issues += self.connection().issues.list(**args)
+            issues += self._connection.issues.list(**args)
         elif self.for_project and not self.assigned:
             # Request all issues on the current project
             args["scope"] = "all"
-            issues = self.remote_project().issues.list(**args)
+            issues = self._remote_project.issues.list(**args)
 
         for issue in issues:
             formatting = TextFormatting.green if issue.state == "opened" else TextFormatting.red
@@ -134,8 +134,8 @@ class IssuesList(RepositoryConnection):
         """
         Open issue with xdg-open
         """
-        if self.remote_project().issues_enabled:
-            Utils.xdg_open(f"{self.remote_project().web_url}/-/issues")
+        if self._remote_project.issues_enabled:
+            Utils.xdg_open(f"{self._remote_project.web_url}/-/issues")
         else:
             Utils.log(LogType.Error, "Issue are disabled for this project")
 
@@ -148,7 +148,7 @@ class IssuesShow(RepositoryConnection):
     def __init__(self, issue_id: int):
         RepositoryConnection.__init__(self)
         try:
-            self.issue: ProjectIssue = self.remote_project().issues.get(issue_id, lazy=False)
+            self.issue: ProjectIssue = self._remote_project.issues.get(issue_id, lazy=False)
         except GitlabGetError:
             Utils.log(LogType.Warning, f"No issue with ID {issue_id}")
             sys.exit(1)

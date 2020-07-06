@@ -22,14 +22,17 @@ class AllInstancesConnection:  # pylint: disable=too-few-public-methods
     Base class that connects to all known instances
     """
 
+    # protected
+    _connections: List[Gitlab] = []
+
+    # private
     __config: Config
-    __connections: List[Gitlab] = []
 
     def __login(self, hostname: str, token: str) -> None:
         try:
             connection: Gitlab = Gitlab(hostname, private_token=token)
             connection.auth()
-            self.__connections.append(connection)
+            self._connections.append(connection)
         except GitlabAuthenticationError:
             Utils.log(LogType.Error, "Could not log into GitLab")
             sys.exit(1)
@@ -43,9 +46,3 @@ class AllInstancesConnection:  # pylint: disable=too-few-public-methods
 
             if isinstance(token, str):
                 self.__login("https://" + hostname, token)
-
-    def connections(self) -> List[Gitlab]:
-        """
-        :return the list of connections
-        """
-        return self.__connections

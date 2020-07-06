@@ -55,7 +55,7 @@ class Search(AllInstancesConnection):
         """
         table = Table()
 
-        for connection in self.connections():
+        for connection in self._connections:
             for result in connection.search("projects", query):
                 description: Optional[str] = result["description"]
                 if description:

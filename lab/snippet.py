@@ -66,7 +66,7 @@ class Snippets(RepositoryConnection):
         """
         paste the contents of a TextIO object
         """
-        snippet: Snippet = self.connection().snippets.create(
+        snippet: Snippet = self._connection.snippets.create(
             {"title": title, "file_name": file.name, "content": file.read(), "visibility": "public"}
         )
         Utils.log(LogType.Info, "Created snippet at", snippet.web_url)

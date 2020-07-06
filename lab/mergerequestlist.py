@@ -87,9 +87,9 @@ class MergeRequestList(RepositoryConnection):
         merge_requests: List[ProjectMergeRequest] = []
 
         if self.for_project:
-            base = self.remote_project()
+            base = self._remote_project
         else:
-            base = self.connection()
+            base = self._connection
 
         if self.merged and self.opened and self.closed:
             merge_requests = base.mergerequests.list()

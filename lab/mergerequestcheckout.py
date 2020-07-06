@@ -56,14 +56,14 @@ class MergeRequestCheckout(RepositoryConnection):
         """
         Checks out the merge request with the specified id in the local worktree
         """
-        self.__mr = self.remote_project().mergerequests.get(merge_request_id, lazy=False)
+        self.__mr = self._remote_project.mergerequests.get(merge_request_id, lazy=False)
         print('Checking out merge request "{}"...'.format(self.__mr.title))
         print("  branch:", self.__mr.source_branch)
 
-        fetch_info = self.local_repo().remotes.origin.fetch(
+        fetch_info = self._local_repo.remotes.origin.fetch(
             "merge-requests/{}/head".format(merge_request_id)
         )[0]
-        if self.__mr.source_branch in self.local_repo().refs:
+        if self.__mr.source_branch in self._local_repo.refs:
             # Make sure not to overwrite local changes
             overwrite = Utils.ask_bool(
                 'Branch "{}" already exists locally, do you want to overwrite it?'.format(
@@ -75,8 +75,8 @@ class MergeRequestCheckout(RepositoryConnection):
                 print("Aborting")
                 sys.exit(1)
 
-            self.local_repo().refs.master.checkout()
-            self.local_repo().delete_head(self.__mr.source_branch, "-f")
+            self._local_repo.refs.master.checkout()
+            self._local_repo.delete_head(self.__mr.source_branch, "-f")
 
-        head = self.local_repo().create_head(self.__mr.source_branch, fetch_info.ref)
+        head = self._local_repo.create_head(self.__mr.source_branch, fetch_info.ref)
         head.checkout()

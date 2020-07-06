@@ -26,19 +26,20 @@ class RepositoryConnection:
     Creates a connection to the gitlab instance used by the current repository
     """
 
+    # protected
+    _connection: Gitlab
+    _local_repo: Repo
+    _remote_project: Project
+
     # private
-    __connection: Gitlab
-    __local_repo: Repo
-    __remote_project: Project
-    __gitlab_token: str
     __config: Config
 
     def __init__(self) -> None:
-        self.__local_repo = Utils.get_cwd_repo()
+        self._local_repo = Utils.get_cwd_repo()
         self.__config = Config()
 
         try:
-            origin = self.__local_repo.remote(name="origin")
+            origin = self._local_repo.remote(name="origin")
         except ValueError:
             Utils.log(LogType.Error, "No origin remote exists")
             sys.exit(1)
@@ -64,37 +65,18 @@ class RepositoryConnection:
             sys.exit(1)
 
         self.__login(gitlab_url, auth_token)
-        if not self.__connection:
+        if not self._connection:
             Utils.log(LogType.Error, "Failed to connect to GitLab")
             sys.exit(1)
 
-        self.__remote_project = self.__connection.projects.get(
+        self._remote_project = self._connection.projects.get(
             Utils.str_id_for_url(Utils.normalize_url(repository))
         )
 
     def __login(self, hostname: str, token: str) -> None:
         try:
-            self.__connection: Gitlab = Gitlab(hostname, private_token=token)
-            self.__gitlab_token = token
-            self.__connection.auth()
+            self._connection: Gitlab = Gitlab(hostname, private_token=token)
+            self._connection.auth()
         except (GitlabAuthenticationError, GitlabGetError):
             Utils.log(LogType.Error, "Could not log into GitLab: {}".format(hostname))
             sys.exit(1)
-
-    def connection(self) -> Gitlab:
-        """
-        Returns the Gitlab connection
-        """
-        return self.__connection
-
-    def local_repo(self) -> Repo:
-        """
-        Returns the local repository
-        """
-        return self.__local_repo
-
-    def remote_project(self) -> Project:
-        """
-        Returns the remote project (for the origin remote)
-        """
-        return self.__remote_project
