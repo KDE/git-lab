@@ -76,6 +76,8 @@ def main() -> None:
 
     try:
         parser.parse()
+    except SystemExit:
+        pass
     except:  # noqa: E722
         print()
         Utils.log(LogType.Error, "git-lab crashed. This should not happen.")
