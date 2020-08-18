@@ -26,6 +26,8 @@ from lab import (
     workflow,
 )
 
+from git.exc import GitCommandError
+
 from lab.utils import Utils, LogType
 
 
@@ -76,6 +78,8 @@ def main() -> None:
 
     try:
         parser.parse()
+    except GitCommandError as git_error:
+        Utils.log(LogType.Error, str(git_error))
     except SystemExit:
         pass
     except:  # noqa: E722
