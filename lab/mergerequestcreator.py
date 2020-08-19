@@ -14,7 +14,7 @@ import sys
 
 from typing import List, Any
 
-from git import Remote, IndexFile
+from git import Remote, IndexFile, PushInfo
 
 from gitlab.v4.objects import Project, ProjectMergeRequest
 from gitlab.exceptions import GitlabCreateError, GitlabGetError
@@ -161,13 +161,16 @@ class MergeRequestCreator(RepositoryConnection):
         pushes the local repository to the fork remote
         """
         remote: Remote
+        info: PushInfo
         if self.__fork:
             remote = self._local_repo.remotes.fork
-            remote.push(force=True)
+            info = remote.push(force=True)[0]
         else:
             remote = self._local_repo.remotes.origin
-            remote.push(refspec=self._local_repo.head, force=True)
+            info = remote.push(refspec=self._local_repo.head, force=True)[0]
 
+        self._local_repo.active_branch.set_tracking_branch(info.remote_ref)
+        
     def __upload_assets(self, text: str) -> str:
         """
         Scans the text for local file paths, uploads the files and returns
