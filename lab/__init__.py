@@ -82,6 +82,8 @@ def main() -> None:
         Utils.log(LogType.Error, str(git_error))
     except SystemExit:
         pass
+    except KeyboardInterrupt:
+        pass
     except:  # noqa: E722
         print()
         Utils.log(LogType.Error, "git-lab crashed. This should not happen.")
