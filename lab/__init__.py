@@ -13,6 +13,8 @@ import traceback
 
 from typing import List, Any
 
+from git.exc import GitCommandError
+
 from lab import (
     mergerequestcreator,
     mergerequestcheckout,
@@ -25,8 +27,6 @@ from lab import (
     snippet,
     workflow,
 )
-
-from git.exc import GitCommandError
 
 from lab.utils import Utils, LogType
 

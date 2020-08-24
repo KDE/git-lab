@@ -170,7 +170,7 @@ class MergeRequestCreator(RepositoryConnection):
             info = remote.push(refspec=self._local_repo.head, force=True)[0]
 
         self._local_repo.active_branch.set_tracking_branch(info.remote_ref)
-        
+
     def __upload_assets(self, text: str) -> str:
         """
         Scans the text for local file paths, uploads the files and returns
