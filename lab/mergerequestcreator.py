@@ -25,31 +25,14 @@ from lab.utils import Utils, LogType
 from lab.editorinput import EditorInput
 
 
-def parser(
-    subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
-) -> argparse.ArgumentParser:
-    """
-    Subparser for merge request creation command
-    :param subparsers: subparsers object from global parser
-    :return: merge request creation subparser
-    """
-    create_parser: argparse.ArgumentParser = subparsers.add_parser(
-        "mr", help="Create a new merge request for the current branch", aliases=["diff"]
-    )
-    create_parser.add_argument(
-        "--target-branch", help="Use different target branch than master", default="master",
-    )
-    return create_parser
-
-
-def run(args: argparse.Namespace) -> None:
+def run(target_branch: str) -> None:
     """
     run merge request creation command
     :param args: parsed arguments
     """
     # To fork or not to fork
     fork: bool = (RepositoryConfig().workflow() == Workflow.Fork)
-    creator: MergeRequestCreator = MergeRequestCreator(args.target_branch, fork)
+    creator: MergeRequestCreator = MergeRequestCreator(target_branch, fork)
     creator.check()
     creator.commit()
 

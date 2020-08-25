@@ -15,43 +15,12 @@ from lab.utils import TextFormatting
 from lab.table import Table
 
 
-def parser(
-    subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
-) -> argparse.ArgumentParser:
-    """
-    Subparser for merge request list command
-    :param subparsers: subparsers object from global parser
-    :return: merge request list subparser
-    """
-    lister_parser: argparse.ArgumentParser = subparsers.add_parser(
-        "mrs", aliases=["list"], help="List open merge requests"
-    )
-    lister_parser.add_argument(
-        "--project",
-        help="Show merge requests of the current project, not of the user",
-        action="store_true",
-    )
-    lister_parser.add_argument(
-        "--opened", help="Show opened merge requests", action="store_true",
-    )
-    lister_parser.add_argument(
-        "--merged", help="Show merged merge requests", action="store_true",
-    )
-    lister_parser.add_argument(
-        "--closed", help="Show closed merge requests", action="store_true",
-    )
-    lister_parser.add_argument(
-        "--url", help="Show web url of merge requests (default false)", action="store_true",
-    )
-    return lister_parser
-
-
-def run(args: argparse.Namespace) -> None:
+def run(for_project: bool, merged: bool, opened: bool, closed: bool, show_url: bool) -> None:
     """
     run merge request list command
     :param args: parsed arguments
     """
-    lister = MergeRequestList(args.project, args.merged, args.opened, args.closed, args.url)
+    lister = MergeRequestList(for_project, merged, opened, closed, show_url)
     lister.print_formatted_list()
 
 

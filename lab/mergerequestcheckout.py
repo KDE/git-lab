@@ -15,30 +15,13 @@ from lab.repositoryconnection import RepositoryConnection
 from lab.utils import Utils
 
 
-def parser(
-    subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
-) -> argparse.ArgumentParser:
-    """
-    Subparser for checking-out merge request command
-    :param subparsers: subparsers object from global parser
-    :return: checking-out merge request subparser
-    """
-    checkouter_parser: argparse.ArgumentParser = subparsers.add_parser(
-        "checkout", help="check out a remote merge request", aliases=["patch"]
-    )
-    checkouter_parser.add_argument(
-        "number", metavar="int", type=int, nargs=1, help="Merge request number to checkout",
-    )
-    return checkouter_parser
-
-
-def run(args: argparse.Namespace) -> None:
+def run(number: int) -> None:
     """
     run checking-out merge request command
     :param args: parsed arguments
     """
     checkouter: MergeRequestCheckout = MergeRequestCheckout()
-    checkouter.checkout(args.number[0])
+    checkouter.checkout(number)
 
 
 class MergeRequestCheckout(RepositoryConnection):

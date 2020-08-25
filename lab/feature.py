@@ -8,7 +8,7 @@ This module contains code for the feature command
 
 import argparse
 
-from typing import Any
+from typing import Any, Optional
 
 from git import Repo
 from git.exc import GitCommandError
@@ -16,32 +16,14 @@ from git.exc import GitCommandError
 from lab.utils import Utils, LogType
 
 
-def parser(
-    subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
-) -> argparse.ArgumentParser:
-    """
-    Subparser for feature command
-    :param subparsers: subparsers object from global parser
-    :return: feature request subparser
-    """
-    feature_parser: argparse.ArgumentParser = subparsers.add_parser(
-        "feature", help="Create branches and list branches"
-    )
-    feature_parser.add_argument("name", nargs="?", help="name for the new branch")
-    feature_parser.add_argument(
-        "start", nargs="?", help="starting point for the new branch", default="HEAD"
-    )
-    return feature_parser
-
-
-def run(args: argparse.Namespace) -> None:
+def run(start: Optional[str], name: Optional[str]) -> None:
     """
     run feature command
     :param args: parsed arguments
     """
     feature = Feature()
-    if args.name:
-        feature.checkout(args.start, args.name)
+    if name:
+        feature.checkout(start, name)
     else:
         feature.list()
 

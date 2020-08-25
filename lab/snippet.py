@@ -9,7 +9,7 @@ Module containing classes for creating merge requests
 import argparse
 import sys
 
-from typing import TextIO
+from typing import TextIO, Optional
 
 from gitlab.v4.objects import Snippet
 
@@ -17,41 +17,23 @@ from lab.repositoryconnection import RepositoryConnection
 from lab.utils import Utils, LogType
 
 
-def parser(
-    subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
-) -> argparse.ArgumentParser:
-    """
-    Subparser for paste command
-    :param subparsers: subparsers object from global parser
-    :return: merge request creation subparser
-    """
-    snippet_parser: argparse.ArgumentParser = subparsers.add_parser(
-        "snippet", help="Create a snippet from stdin or file", aliases=["paste"]
-    )
-    snippet_parser.add_argument("--title", help="Add a custom title", default="Empty title")
-    snippet_parser.add_argument(
-        "filename", metavar="str", type=str, nargs="?", help="File name to uplad",
-    )
-    return snippet_parser
-
-
-def run(args: argparse.Namespace) -> None:
+def run(filename: Optional[str], title: Optional[str]) -> None:
     """
     run snippet creation commands
     :param args: parsed arguments
     """
     snippets = Snippets()
     file: TextIO
-    if args.filename:
+    if filename:
         try:
-            file = open(args.filename, "r")
+            file = open(filename, "r")
         except FileNotFoundError:
-            Utils.log(LogType.Error, "Failed to open file", args.filename)
+            Utils.log(LogType.Error, "Failed to open file", filename)
             sys.exit(1)
     else:
         file = sys.stdin
 
-    snippets.paste(file, title=args.title)
+    snippets.paste(file, title=title)
 
 
 class Snippets(RepositoryConnection):

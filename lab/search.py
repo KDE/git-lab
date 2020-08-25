@@ -15,29 +15,12 @@ from lab.table import Table
 from lab.utils import TextFormatting
 
 
-def parser(
-    subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
-) -> argparse.ArgumentParser:
-    """
-    Subparser for search command
-    :param subparsers: subparsers object from global parser
-    :return: search subparser
-    """
-    search_parser: argparse.ArgumentParser = subparsers.add_parser(
-        "search", help="Search for a repository"
-    )
-    search_parser.add_argument(
-        "search_query", type=str, nargs=1, help="Search query",
-    )
-    return search_parser
-
-
-def run(args: argparse.Namespace) -> None:
+def run(search_query: str) -> None:
     """
     :param args: parsed arguments
     """
     search = Search()
-    search.search_projects(args.search_query)
+    search.search_projects(search_query)
 
 
 class Search(AllInstancesConnection):
