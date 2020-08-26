@@ -68,15 +68,17 @@ int main(int argc, char* argv[]) {
     snippet_parser->add_option("--title", snippet_title, "Add a custom title");
     snippet_parser->add_option("filename", snippet_filename, "File name to upload");
 
-    bool workflow_fork;
-    bool workflow_workbranch;
-    workflow_parser->add_option("--fork", workflow_fork, "Set the fork workflow (branch in a fork of the upstream repository)");
-    workflow_parser->add_option("--workbranch", workflow_workbranch, "Set the work branch workflow (branch in the upstream repository)");
+    bool workflow_fork = false;
+    bool workflow_workbranch = false;
+    workflow_parser->add_flag("--fork", workflow_fork, "Set the fork workflow (branch in a fork of the upstream repository)");
+    workflow_parser->add_flag("--workbranch", workflow_workbranch, "Set the work branch workflow (branch in the upstream repository)");
 
     CLI11_PARSE(parser, argc, argv);
 
     py::scoped_interpreter guard {}; // start the interpreter and keep it alive
 
+    // Run subcommand
+//    try {
     if (parser.got_subcommand(mr_parser)) {
         py::module mergerequestcreator = py::module::import("lab.mergerequestcreator");
         mergerequestcreator.attr("run")(target_branch);
@@ -133,6 +135,34 @@ int main(int argc, char* argv[]) {
         std::cout << parser.help();
         return 1;
     }
+
+    /*} catch (const py::error_already_set &error) {
+        auto gitCommandError = py::module::import("git.exc").attr("GitCommandError");
+
+        auto utils = py::module::import("lab.utils");
+        auto log = utils.attr("Utils").attr("log");
+        auto logTypeError = utils.attr("LogType").attr("Error");
+        if (error.matches(gitCommandError)) {
+            log(logTypeError, error.what());
+
+            return 0;
+        } else if (false)(error.matches(systemExit) || error.matches(keyboardInterrupt)) {
+            std::cout << "Intentional exit";
+            std::flush(std::cout);
+            return 0;
+        } else {
+            log(logTypeError, "git-lab crashed. This should not happen.");
+            const auto traceback = py::module::import("traceback");
+            std::cout <<
+                "Please help us to fix it by opening an issue on\n"
+                "https://invent.kde.org/sdk/git-lab/-/issues.\n"
+                "Make sure to include the information below:\n"
+                "\n```\n"
+                << traceback.attr("format_exc")().cast<std::string>()
+                << "```";
+            std::flush(std::cout);
+        }
+    }*/
 
     return 0;
 }
