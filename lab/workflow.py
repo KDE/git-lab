@@ -17,8 +17,10 @@ def run(fork: bool, workbranch: bool) -> None:
     :param args: parsed arguments
     """
     repository_config = RepositoryConfig()
-    if args.fork:
+
+    if fork:
         repository_config.set_workflow(Workflow.Fork)
-    elif args.workbranch:
+    elif workbranch:
         repository_config.set_workflow(Workflow.Workbranch)
+
     repository_config.save()

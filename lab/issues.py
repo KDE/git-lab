@@ -9,7 +9,7 @@ Module containing issues command
 import argparse
 import os
 import sys
-from typing import List, Dict, Optional
+from typing import List, Dict
 
 from gitlab.v4.objects import ProjectIssue, GitlabGetError
 

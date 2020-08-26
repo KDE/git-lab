@@ -17,7 +17,7 @@ def run(host: str, token: str, command: str) -> None:
     """
     config: Config = Config()
 
-    if args.command:
+    if command:
         config.set_auth_command(host, command)
     else:
         config.set_token(host, token)
