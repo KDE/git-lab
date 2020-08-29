@@ -6,6 +6,8 @@
 #include "workflow.h"
 #include "login.h"
 #include "feature.h"
+#include "snippet.h"
+#include "utils.h"
 
 namespace py = pybind11;
 
@@ -68,8 +70,8 @@ int main(int argc, char* argv[]) {
     issues_parser->add_flag("--project", issues_project, "Show all project issues and not only the one you authored");
     issues_parser->add_flag("--web", issues_web, "open on web browser");
 
-    std::string snippet_title;
-    std::string snippet_filename;
+    std::optional<std::string> snippet_title;
+    std::optional<std::string> snippet_filename;
     snippet_parser->add_option("--title", snippet_title, "Add a custom title");
     snippet_parser->add_option("filename", snippet_filename, "File name to upload");
 
@@ -128,8 +130,7 @@ int main(int argc, char* argv[]) {
         py::module issues = py::module::import("lab.issues");
         issues.attr("run")(issue_id, issues_opened, issues_closed, issues_assigned, issues_project, issues_web);
     } else if (parser.got_subcommand(snippet_parser)) {
-        py::module snippet = py::module::import("lab.snippet");
-        snippet.attr("run")(snippet_filename, snippet_filename);
+        Snippet::run(snippet_filename, snippet_title);
     } else if (parser.got_subcommand(workflow_parser)) {
         Workflow::run(workflow_fork, workflow_workbranch);
     } else if (parser.got_subcommand(fork_parser)) {

@@ -198,7 +198,6 @@ class RepositoryConfig:
         """
         Set the workflow to one of RepositoryConfig.Workflow
         """
-
         # Make sure not to corrupt the config file with invalid numbers
         if not isinstance(workflow, Workflow):
             raise TypeError()

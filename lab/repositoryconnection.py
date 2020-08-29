@@ -69,7 +69,6 @@ class RepositoryConnection:
             Utils.log(LogType.Error, "Failed to connect to GitLab")
             sys.exit(1)
 
-        print(Utils.str_id_for_url(Utils.normalize_url(repository)))
         self._remote_project = self._connection.projects.get(
             Utils.str_id_for_url(Utils.normalize_url(repository))
         )
