@@ -16,7 +16,7 @@ from git.exc import GitCommandError
 from lab.utils import Utils, LogType
 
 
-def run(start: Optional[str], name: Optional[str]) -> None:
+def run(start: str, name: Optional[str]) -> None:
     """
     run feature command
     :param args: parsed arguments

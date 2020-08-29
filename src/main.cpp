@@ -2,6 +2,11 @@
 #include <pybind11/embed.h>
 #include <pybind11/pytypes.h>
 
+#include "fork.h"
+#include "workflow.h"
+#include "login.h"
+#include "feature.h"
+
 namespace py = pybind11;
 
 int main(int argc, char* argv[]) {
@@ -13,7 +18,7 @@ int main(int argc, char* argv[]) {
     auto *feature_parser = parser.add_subcommand("feature", "Create branches and list branches");
     auto *login_parser = parser.add_subcommand("login", "Save a token for a GitLab instance");
     auto *search_parser = parser.add_subcommand("search", "Search for a repository");
-    parser.add_subcommand("fork", "Create a fork of the project");
+    auto *fork_parser = parser.add_subcommand("fork", "Create a fork of the project");
     auto *issues_parser = parser.add_subcommand("issues", "Gitlab issues");
     auto *snippet_parser = parser.add_subcommand("snippet", "Create a snippet from stdin or file");
     auto *workflow_parser = parser.add_subcommand("workflow", "Set the workflow to use for a project");
@@ -78,7 +83,6 @@ int main(int argc, char* argv[]) {
     py::scoped_interpreter guard {}; // start the interpreter and keep it alive
 
     // Run subcommand
-//    try {
     if (parser.got_subcommand(mr_parser)) {
         py::module mergerequestcreator = py::module::import("lab.mergerequestcreator");
         mergerequestcreator.attr("run")(target_branch);
@@ -104,11 +108,9 @@ int main(int argc, char* argv[]) {
 
         mrs.attr("run")(mrs_for_project, mrs_merged, mrs_opened, mrs_closed, mrs_show_url);
     } else if (parser.got_subcommand(feature_parser)) {
-        py::module feature = py::module::import("lab.feature");
-        feature.attr("run")(branch_start, branch_name);
+        Feature::run(branch_start, branch_name);
     } else if (parser.got_subcommand(login_parser)) {
-        py::module login = py::module::import("lab.login");
-        login.attr("run")(host, token, command);
+        Login::run(host, token, command);
     } else if (parser.got_subcommand(search_parser)) {
         py::module search = py::module::import("lab.search");
         search.attr("run")(search_query);
@@ -129,40 +131,13 @@ int main(int argc, char* argv[]) {
         py::module snippet = py::module::import("lab.snippet");
         snippet.attr("run")(snippet_filename, snippet_filename);
     } else if (parser.got_subcommand(workflow_parser)) {
-        py::module workflow = py::module::import("lab.workflow");
-        workflow.attr("run")(workflow_fork, workflow_workbranch);
+        Workflow::run(workflow_fork, workflow_workbranch);
+    } else if (parser.got_subcommand(fork_parser)) {
+        Fork::run();
     } else {
         std::cout << parser.help();
         return 1;
     }
-
-    /*} catch (const py::error_already_set &error) {
-        auto gitCommandError = py::module::import("git.exc").attr("GitCommandError");
-
-        auto utils = py::module::import("lab.utils");
-        auto log = utils.attr("Utils").attr("log");
-        auto logTypeError = utils.attr("LogType").attr("Error");
-        if (error.matches(gitCommandError)) {
-            log(logTypeError, error.what());
-
-            return 0;
-        } else if (false)(error.matches(systemExit) || error.matches(keyboardInterrupt)) {
-            std::cout << "Intentional exit";
-            std::flush(std::cout);
-            return 0;
-        } else {
-            log(logTypeError, "git-lab crashed. This should not happen.");
-            const auto traceback = py::module::import("traceback");
-            std::cout <<
-                "Please help us to fix it by opening an issue on\n"
-                "https://invent.kde.org/sdk/git-lab/-/issues.\n"
-                "Make sure to include the information below:\n"
-                "\n```\n"
-                << traceback.attr("format_exc")().cast<std::string>()
-                << "```";
-            std::flush(std::cout);
-        }
-    }*/
 
     return 0;
 }

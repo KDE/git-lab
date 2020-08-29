@@ -44,6 +44,5 @@ setup(
     version=VERSION,
     packages=find_packages(),
     cmdclass={"install": GitLabInstallCommand,},
-    entry_points={"console_scripts": ["git-lab = lab:main",]},
     install_requires=open("requirements.txt").readlines(),
 )
