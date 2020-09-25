@@ -3,6 +3,14 @@
 Subcommand for git providing a command line interface to GitLab.
 An arc-style interface is also provided for a simplified transition from Phabricator to GitLab.
 
+## Installation
+
+```
+git clone https://invent.kde.org/sdk/git-lab && cd git-lab
+sudo pip3 install -r requirements.txt
+sudo ./setup.py install
+```
+
 ## Workflow
 
 ### Logging in
@@ -65,13 +73,6 @@ or
 
 ```
 echo "Paste data" | git lab snippet
-```
-
-## Installation
-
-```
-sudo pip3 install -r requirements.txt
-sudo ./setup.py install
 ```
 
 ## Contributing
