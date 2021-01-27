@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 
 from gitlab import Gitlab
 from gitlab.v4.objects import Project
-from gitlab.exceptions import GitlabAuthenticationError, GitlabGetError
+from gitlab.exceptions import GitlabAuthenticationError, GitlabGetError, GitlabHttpError
 from git import Repo
 
 from lab.utils import Utils, LogType
@@ -69,9 +69,14 @@ class RepositoryConnection:
             Utils.log(LogType.Error, "Failed to connect to GitLab")
             sys.exit(1)
 
-        self._remote_project = self._connection.projects.get(
-            Utils.str_id_for_url(Utils.normalize_url(repository))
-        )
+        try:
+            self._remote_project = self._connection.projects.get(
+                Utils.str_id_for_url(Utils.normalize_url(repository))
+            )
+        except (GitlabHttpError, GitlabGetError):
+            Utils.log(LogType.Error, "The repository could not be found on the GitLab instance.")
+            print("If the repository was recently moved, please update the origin remote using git.")
+            exit(1)
 
     def __login(self, hostname: str, token: str) -> None:
         try:
