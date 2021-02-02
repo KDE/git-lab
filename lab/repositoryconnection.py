@@ -75,7 +75,9 @@ class RepositoryConnection:
             )
         except (GitlabHttpError, GitlabGetError):
             Utils.log(LogType.Error, "The repository could not be found on the GitLab instance.")
-            print("If the repository was recently moved, please update the origin remote using git.")
+            print(
+                "If the repository was recently moved, please update the origin remote using git."
+            )
             exit(1)
 
     def __login(self, hostname: str, token: str) -> None:

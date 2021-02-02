@@ -30,7 +30,11 @@ def parser(
     )
     snippet_parser.add_argument("--title", help="Add a custom title", default="Empty title")
     snippet_parser.add_argument(
-        "filename", metavar="str", type=str, nargs="?", help="File name to uplad",
+        "filename",
+        metavar="str",
+        type=str,
+        nargs="?",
+        help="File name to uplad",
     )
     return snippet_parser
 

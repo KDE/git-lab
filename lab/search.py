@@ -27,7 +27,10 @@ def parser(
         "search", help="Search for a repository"
     )
     search_parser.add_argument(
-        "search_query", type=str, nargs=1, help="Search query",
+        "search_query",
+        type=str,
+        nargs=1,
+        help="Search query",
     )
     return search_parser
 

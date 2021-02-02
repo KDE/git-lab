@@ -27,7 +27,11 @@ def parser(
         "checkout", help="check out a remote merge request", aliases=["patch"]
     )
     checkouter_parser.add_argument(
-        "number", metavar="int", type=int, nargs=1, help="Merge request number to checkout",
+        "number",
+        metavar="int",
+        type=int,
+        nargs=1,
+        help="Merge request number to checkout",
     )
     return checkouter_parser
 

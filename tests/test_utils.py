@@ -9,13 +9,15 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../")
 
 from lab.utils import Utils
 
+
 class UtilsTest(unittest.TestCase):
     def test_gitlab_instance_url(self):
         # https
-        repos = ("git@invent.kde.org:KDE/kaidan.git",
-                 "ssh://git@invent.kde.org/KDE/kaidan.git"
-                 "https://invent.kde.org/KDE/kaidan",
-                 "git://invent.kde.org/KDE/kaidan")
+        repos = (
+            "git@invent.kde.org:KDE/kaidan.git",
+            "ssh://git@invent.kde.org/KDE/kaidan.git" "https://invent.kde.org/KDE/kaidan",
+            "git://invent.kde.org/KDE/kaidan",
+        )
 
         for repo in repos:
             url = Utils.gitlab_instance_url(repo)
@@ -47,6 +49,7 @@ class UtilsTest(unittest.TestCase):
         ssh_url: str = Utils.ssh_url_from_http(url)
 
         self.assertEqual(ssh_url, "ssh://git@invent.kde.org/KDE/kaidan")
+
 
 if __name__ == "__main__":
     unittest.main()

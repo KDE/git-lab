@@ -30,14 +30,20 @@ def parser(
     issues_parser: argparse.ArgumentParser = subparsers.add_parser("issues", help="Gitlab issues")
 
     issues_parser.add_argument(
-        "--opened", help="Show opened issues", action="store_true",
+        "--opened",
+        help="Show opened issues",
+        action="store_true",
     )
     issues_parser.add_argument(
-        "--closed", help="Show closed issues", action="store_true",
+        "--closed",
+        help="Show closed issues",
+        action="store_true",
     )
     group = issues_parser.add_mutually_exclusive_group()
     group.add_argument(
-        "--assigned", help="Show only issues assigned to me", action="store_true",
+        "--assigned",
+        help="Show only issues assigned to me",
+        action="store_true",
     )
     group.add_argument(
         "--project",

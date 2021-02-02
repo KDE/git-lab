@@ -37,7 +37,9 @@ def parser(
         "mr", help="Create a new merge request for the current branch", aliases=["diff"]
     )
     create_parser.add_argument(
-        "--target-branch", help="Use different target branch than master", default="master",
+        "--target-branch",
+        help="Use different target branch than master",
+        default="master",
     )
     return create_parser
 
@@ -48,7 +50,7 @@ def run(args: argparse.Namespace) -> None:
     :param args: parsed arguments
     """
     # To fork or not to fork
-    fork: bool = (RepositoryConfig().workflow() == Workflow.Fork)
+    fork: bool = RepositoryConfig().workflow() == Workflow.Fork
     creator: MergeRequestCreator = MergeRequestCreator(args.target_branch, fork)
     creator.check()
     creator.commit()
@@ -172,7 +174,7 @@ class MergeRequestCreator(RepositoryConnection):
         self._local_repo.active_branch.set_tracking_branch(info.remote_ref)
 
         info: PushInfo
-        if (info.old_commit):
+        if info.old_commit:
             print(info.local_ref, "was at", info.old_commit)
 
     def __upload_assets(self, text: str) -> str:
