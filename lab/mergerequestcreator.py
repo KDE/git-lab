@@ -173,7 +173,6 @@ class MergeRequestCreator(RepositoryConnection):
 
         self._local_repo.active_branch.set_tracking_branch(info.remote_ref)
 
-        info: PushInfo
         if info.old_commit:
             print(info.local_ref, "was at", info.old_commit)
 
