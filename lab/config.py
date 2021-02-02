@@ -11,6 +11,7 @@ import os
 import sys
 import subprocess
 from enum import Enum, auto
+from pathlib import Path
 
 from typing import TextIO, Dict, Optional, Any, Tuple
 
@@ -63,13 +64,14 @@ class Config:
     def __init__(self) -> None:
         if not os.path.isfile(self.config_path):
             old_config_path: str = os.path.expanduser("~/.gitlabconfig")
+            config_dir = Path(self.config_path).parent
             if os.path.isfile(old_config_path):
-                if not os.path.isdir(user_config_dir()):
-                    os.mkdir(user_config_dir())
+                if not os.path.isdir(config_dir):
+                    os.mkdir(config_dir)
                 os.rename(old_config_path, self.config_path)
             else:
-                if not os.path.isdir(user_config_dir()):
-                    os.mkdir(user_config_dir())
+                if not os.path.isdir(config_dir):
+                    os.mkdir(config_dir)
                 file = open(self.config_path, "w+")
                 json.dump({"version": 1, "instances": {}}, file)
                 file.close()
