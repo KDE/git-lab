@@ -9,7 +9,7 @@ Module containing classes for creating merge requests
 import argparse
 import sys
 
-from typing import TextIO
+from typing import TextIO, Optional
 
 from gitlab.v4.objects import Snippet
 
@@ -66,7 +66,7 @@ class Snippets(RepositoryConnection):
     def __init__(self) -> None:
         RepositoryConnection.__init__(self)
 
-    def paste(self, file: TextIO, title: str) -> None:
+    def paste(self, file: TextIO, title: Optional[str]) -> None:
         """
         paste the contents of a TextIO object
         """

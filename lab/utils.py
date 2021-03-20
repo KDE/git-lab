@@ -11,7 +11,7 @@ import subprocess
 import sys
 import os
 import shlex
-from typing import List, Optional
+from typing import List, Optional, Final
 
 from urllib.parse import ParseResult, urlparse, quote_plus
 from enum import Enum, auto
@@ -35,18 +35,17 @@ class TextFormatting:  # pylint: disable=too-few-public-methods
     Structure containing constants for working with text formatting
     """
 
-    purple: str = "\033[0;95m"
-    cyan: str = "\033[0;36m"
-    darkcyan: str = "\033[0;96m"
-    blue: str = "\033[0;34m"
-    green: str = "\033[0;32m"
-    yellow: str = "\033[0;33m"
-    red: str = "\033[0;31m"
-    lightred: str = "\033[1;31m"
-    bold: str = "\033[1m"
-    underline: str = "\033[4m"
-    end: str = "\033[0m"
-
+    purple: Final[str] = "\033[0;95m"
+    cyan: Final[str] = "\033[0;36m"
+    darkcyan: Final[str] = "\033[0;96m"
+    blue: Final[str] = "\033[0;34m"
+    green: Final[str] = "\033[0;32m"
+    yellow: Final[str] = "\033[0;33m"
+    red: Final[str] = "\033[0;31m"
+    lightred: Final[str] = "\033[1;31m"
+    bold: Final[str] = "\033[1m"
+    underline: Final[str] = "\033[4m"
+    end: Final[str] = "\033[0m"
 
 class Utils:
     """

@@ -40,7 +40,7 @@ def run(args: argparse.Namespace) -> None:
     :param args: parsed arguments
     """
     search = Search()
-    search.search_projects(args.search_query)
+    search.search_projects(args.search_query[0])
 
 
 class Search(AllInstancesConnection):
