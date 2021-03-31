@@ -82,6 +82,14 @@ class MergeRequestCreator(RepositoryConnection):
         """
         Run some sanity checks and warn the user if necessary
         """
+        if self._local_repo.active_branch.name == "master":
+            Utils.log(
+                LogType.Warning,
+                "Creating merge requests from master is a bad idea.",
+                "Please check out a new a branch before creating a merge request.",
+                "To cancel, please press Ctrl + C.",
+            )
+
         if (
             not self._local_repo.active_branch.name.startswith("work/")
             and not self.__fork
