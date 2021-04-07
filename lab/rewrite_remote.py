@@ -11,6 +11,7 @@ from git import Repo
 
 from lab.utils import Utils
 
+
 def parser(
     subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
 ) -> argparse.ArgumentParser:
@@ -24,6 +25,7 @@ def parser(
         help="Name of the remote to rewrite",
     )
     return rewrite_remote_parser
+
 
 def run(args: argparse.Namespace) -> None:
     repo: Repo = Utils.get_cwd_repo()

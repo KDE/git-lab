@@ -26,7 +26,7 @@ from lab import (
     issues,
     snippet,
     workflow,
-    rewrite_remote
+    rewrite_remote,
 )
 
 from lab.utils import Utils, LogType
@@ -53,7 +53,7 @@ class Parser:  # pylint: disable=R0903
             issues,
             snippet,
             workflow,
-            rewrite_remote
+            rewrite_remote,
         ]
         for command in command_list:
             parser = command.parser(self.subparsers)
