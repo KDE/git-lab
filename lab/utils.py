@@ -47,6 +47,7 @@ class TextFormatting:  # pylint: disable=too-few-public-methods
     underline: Final[str] = "\033[4m"
     end: Final[str] = "\033[0m"
 
+
 class Utils:
     """
     This class contains static methods for common tasks
