@@ -78,7 +78,7 @@ class RepositoryConnection:
             print(
                 "If the repository was recently moved, please update the origin remote using git."
             )
-            exit(1)
+            sys.exit(1)
 
     def __login(self, hostname: str, token: str) -> None:
         try:
