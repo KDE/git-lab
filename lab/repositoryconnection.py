@@ -71,7 +71,7 @@ class RepositoryConnection:
 
         try:
             self._remote_project = self._connection.projects.get(
-                Utils.str_id_for_url(Utils.normalize_url(repository))
+                Utils.str_id_for_url(repository)
             )
         except (GitlabHttpError, GitlabGetError):
             Utils.log(LogType.ERROR, "The repository could not be found on the GitLab instance.")

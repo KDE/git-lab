@@ -76,7 +76,7 @@ class Utils:
         normalized_url = removesuffix(normalized_url, "/")
 
         repository_url: ParseResult = urlparse(normalized_url)
-        return quote_plus(repository_url.path[1:])
+        return quote_plus(repository_url.path[1:], safe='/')
 
     @staticmethod
     def log(log_type: LogType, *message: str) -> None:
