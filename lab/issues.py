@@ -11,7 +11,8 @@ import os
 import sys
 from typing import List, Dict
 
-from gitlab.v4.objects import ProjectIssue, GitlabGetError
+from gitlab.v4.objects import ProjectIssue
+from gitlab.exceptions import GitlabGetError
 
 from lab.repositoryconnection import RepositoryConnection
 from lab.utils import TextFormatting, Utils, LogType
