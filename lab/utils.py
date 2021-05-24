@@ -59,7 +59,10 @@ class Utils:
         Returns the url encoded string id for a repository
         """
         normalized_url: str = Utils.normalize_url(url)
-        repository_url: ParseResult = urlparse(normalized_url.replace(".git", ""))
+        normalized_url = normalized_url.removesuffix(".git")
+        normalized_url = normalized_url.removesuffix("/")
+
+        repository_url: ParseResult = urlparse(normalized_url)
         return quote_plus(repository_url.path[1:])
 
     @staticmethod

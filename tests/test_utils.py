@@ -50,6 +50,12 @@ class UtilsTest(unittest.TestCase):
 
         self.assertEqual(ssh_url, "ssh://git@invent.kde.org/KDE/kaidan")
 
+    def test_id_url_ending_on_slash(self):
+        url: str = "https://invent.kde.org/network/kaidan/"
+
+        str_id: str = Utils.str_id_for_url(url)
+
+        self.assertEqual(str_id, "network%2Fkaidan")
 
 if __name__ == "__main__":
     unittest.main()
