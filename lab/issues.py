@@ -126,11 +126,11 @@ class IssuesList(RepositoryConnection):
             issues = self._remote_project.issues.list(**args)
 
         for issue in issues:
-            formatting = TextFormatting.green if issue.state == "opened" else TextFormatting.red
+            formatting = TextFormatting.GREEN if issue.state == "opened" else TextFormatting.RED
             row: List[str] = [
-                TextFormatting.bold + issue.references["full"] + TextFormatting.end,
+                TextFormatting.BOLD + issue.references["full"] + TextFormatting.END,
                 issue.title,
-                formatting + issue.state + TextFormatting.end,
+                formatting + issue.state + TextFormatting.END,
             ]
 
             table.add_row(row)
@@ -144,7 +144,7 @@ class IssuesList(RepositoryConnection):
         if self._remote_project.issues_enabled:
             Utils.xdg_open(f"{self._remote_project.web_url}/-/issues")
         else:
-            Utils.log(LogType.Error, "Issue are disabled for this project")
+            Utils.log(LogType.ERROR, "Issue are disabled for this project")
 
 
 class IssuesShow(RepositoryConnection):
@@ -157,7 +157,7 @@ class IssuesShow(RepositoryConnection):
         try:
             self.issue: ProjectIssue = self._remote_project.issues.get(issue_id, lazy=False)
         except GitlabGetError:
-            Utils.log(LogType.Warning, f"No issue with ID {issue_id}")
+            Utils.log(LogType.WARNING, f"No issue with ID {issue_id}")
             sys.exit(1)
 
     def open_web(self) -> None:
@@ -167,16 +167,16 @@ class IssuesShow(RepositoryConnection):
         Utils.xdg_open(self.issue.web_url)
 
     def __str__(self) -> str:
-        formatting = TextFormatting.green if self.issue.state == "opened" else TextFormatting.red
+        formatting = TextFormatting.GREEN if self.issue.state == "opened" else TextFormatting.RED
         textbuffer: str = ""
         textbuffer += (
-            TextFormatting.bold
+            TextFormatting.BOLD
             + self.issue.title
-            + TextFormatting.end
+            + TextFormatting.END
             + f" (#{self.issue.iid}) "
             + formatting
             + self.issue.state
-            + TextFormatting.end
+            + TextFormatting.END
             + os.linesep
         )
         textbuffer += self.issue.description

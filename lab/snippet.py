@@ -50,7 +50,7 @@ def run(args: argparse.Namespace) -> None:
         try:
             file = open(args.filename, "r")
         except FileNotFoundError:
-            Utils.log(LogType.Error, "Failed to open file", args.filename)
+            Utils.log(LogType.ERROR, "Failed to open file", args.filename)
             sys.exit(1)
     else:
         file = sys.stdin
@@ -73,5 +73,5 @@ class Snippets(RepositoryConnection):
         snippet: Snippet = self._connection.snippets.create(
             {"title": title, "file_name": file.name, "content": file.read(), "visibility": "public"}
         )
-        Utils.log(LogType.Info, "Created snippet at", snippet.web_url)
+        Utils.log(LogType.INFO, "Created snippet at", snippet.web_url)
         print("You can access it raw at", snippet.raw_url)

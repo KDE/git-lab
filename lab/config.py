@@ -48,7 +48,7 @@ class Config:
 
     def __migrate_to_version_1(self) -> None:
         if "version" not in self.__config:
-            Utils.log(LogType.Info, "Migrating configuration file to version 1")
+            Utils.log(LogType.INFO, "Migrating configuration file to version 1")
 
             new_config: Dict[str, Any] = {"version": 1, "instances": {}}
 
@@ -72,9 +72,9 @@ class Config:
             else:
                 if not os.path.isdir(config_dir):
                     os.mkdir(config_dir)
-                file = open(self.config_path, "w+")
-                json.dump({"version": 1, "instances": {}}, file)
-                file.close()
+                with open(self.config_path, "w+") as file:
+                    json.dump({"version": 1, "instances": {}}, file)
+                    file.close()
 
         self.__file = open(self.config_path, "r+")
         self.__config = json.load(self.__file)
@@ -155,8 +155,8 @@ class Workflow(Enum):
     """
 
     # Never reorder this values! The config file stores the actual numbers.
-    Fork = auto()  # push merge request branches to a fork of the upstream repository
-    Workbranch = auto()  # push merge request branches to the upstream repository
+    FORK = auto()  # push merge request branches to a fork of the upstream repository
+    WORKBRANCH = auto()  # push merge request branches to the upstream repository
 
 
 class RepositoryConfig:
@@ -173,13 +173,13 @@ class RepositoryConfig:
         if repository_path:
             self.config_path = repository_path + os.path.sep + ".git" + os.path.sep + "gitlabconfig"
         else:
-            Utils.log(LogType.Error, "Current directory is not a git repository")
+            Utils.log(LogType.ERROR, "Current directory is not a git repository")
             sys.exit(1)
 
         if not os.path.isfile(self.config_path):
-            file = open(self.config_path, "w+")
-            json.dump({}, file)
-            file.close()
+            with open(self.config_path, "w+") as file:
+                json.dump({}, file)
+                file.close()
 
         self.__file = open(self.config_path, "r+")
         self.__config = json.load(self.__file)
@@ -192,7 +192,7 @@ class RepositoryConfig:
         try:
             value = self.__config["workflow"]
         except KeyError:
-            return Workflow.Fork
+            return Workflow.FORK
 
         return Workflow(value)
 

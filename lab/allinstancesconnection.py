@@ -34,7 +34,7 @@ class AllInstancesConnection:  # pylint: disable=too-few-public-methods
             connection.auth()
             self._connections.append(connection)
         except GitlabAuthenticationError:
-            Utils.log(LogType.Error, "Could not log into GitLab")
+            Utils.log(LogType.ERROR, "Could not log into GitLab")
             sys.exit(1)
 
     def __init__(self) -> None:

@@ -25,9 +25,9 @@ class LogType(Enum):
     Enum representing the type of log message
     """
 
-    Info = auto()
-    Warning = auto()
-    Error = auto()
+    INFO = auto()
+    WARNING = auto()
+    ERROR = auto()
 
 
 class TextFormatting:  # pylint: disable=too-few-public-methods
@@ -35,17 +35,17 @@ class TextFormatting:  # pylint: disable=too-few-public-methods
     Structure containing constants for working with text formatting
     """
 
-    purple: Final[str] = "\033[0;95m"
-    cyan: Final[str] = "\033[0;36m"
-    darkcyan: Final[str] = "\033[0;96m"
-    blue: Final[str] = "\033[0;34m"
-    green: Final[str] = "\033[0;32m"
-    yellow: Final[str] = "\033[0;33m"
-    red: Final[str] = "\033[0;31m"
-    lightred: Final[str] = "\033[1;31m"
-    bold: Final[str] = "\033[1m"
-    underline: Final[str] = "\033[4m"
-    end: Final[str] = "\033[0m"
+    PURPLE: Final[str] = "\033[0;95m"
+    CYAN: Final[str] = "\033[0;36m"
+    DARKCYAN: Final[str] = "\033[0;96m"
+    BLUE: Final[str] = "\033[0;34m"
+    GREEN: Final[str] = "\033[0;32m"
+    YELLOW: Final[str] = "\033[0;33m"
+    RED: Final[str] = "\033[0;31m"
+    LIGHTRED: Final[str] = "\033[1;31m"
+    BOLD: Final[str] = "\033[1m"
+    UNDERLINE: Final[str] = "\033[4m"
+    END: Final[str] = "\033[0m"
 
 
 class Utils:
@@ -67,15 +67,15 @@ class Utils:
         """
         Prints a message in a colorful and consistent way
         """
-        prefix = TextFormatting.bold
-        if log_type == LogType.Info:
+        prefix = TextFormatting.BOLD
+        if log_type == LogType.INFO:
             prefix += "Info"
-        elif log_type == LogType.Warning:
-            prefix += TextFormatting.yellow + "Warning" + TextFormatting.end
-        elif log_type == LogType.Error:
-            prefix += TextFormatting.red + "Error" + TextFormatting.end
+        elif log_type == LogType.WARNING:
+            prefix += TextFormatting.YELLOW + "Warning" + TextFormatting.END
+        elif log_type == LogType.ERROR:
+            prefix += TextFormatting.RED + "Error" + TextFormatting.END
 
-        prefix += TextFormatting.end
+        prefix += TextFormatting.END
 
         if len(prefix) > 0:
             prefix += ":"
@@ -99,7 +99,7 @@ class Utils:
         if "@" in url and ":" in url:
             return "ssh://" + url.replace(":", "/")
 
-        Utils.log(LogType.Error, "Invalid url", url)
+        Utils.log(LogType.ERROR, "Invalid url", url)
         sys.exit(1)
 
     @staticmethod
@@ -142,7 +142,7 @@ class Utils:
                 return "https://" + repository_url.hostname
 
         # If everything failed, exit
-        Utils.log(LogType.Error, "Failed to detect GitLab instance url")
+        Utils.log(LogType.ERROR, "Failed to detect GitLab instance url")
         sys.exit(1)
 
     @staticmethod
@@ -154,7 +154,7 @@ class Utils:
         try:
             return Repo(Utils.find_dotgit(os.getcwd()))
         except InvalidGitRepositoryError:
-            Utils.log(LogType.Error, "Current directory is not a git repository")
+            Utils.log(LogType.ERROR, "Current directory is not a git repository")
             sys.exit(1)
 
     @staticmethod

@@ -15,6 +15,9 @@ from lab.utils import Utils
 def parser(
     subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
 ) -> argparse.ArgumentParser:
+    """
+    Subparser for the rewrite-remote command
+    """
     rewrite_remote_parser: argparse.ArgumentParser = subparsers.add_parser(
         "rewrite-remote", help="Rewrite the remote url to ssh"
     )
@@ -28,6 +31,9 @@ def parser(
 
 
 def run(args: argparse.Namespace) -> None:
+    """
+    :param args: parsed arguments
+    """
     repo: Repo = Utils.get_cwd_repo()
     remote_url = repo.git.remote("get-url", args.remote)
     ssh_url = Utils.ssh_url_from_http(Utils.normalize_url(remote_url))

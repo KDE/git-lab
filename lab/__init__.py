@@ -81,14 +81,14 @@ def main() -> None:
     try:
         parser.parse()
     except GitCommandError as git_error:
-        Utils.log(LogType.Error, str(git_error))
+        Utils.log(LogType.ERROR, str(git_error))
     except SystemExit:
         pass
     except KeyboardInterrupt:
         pass
     except:  # noqa: E722
         print()
-        Utils.log(LogType.Error, "git-lab crashed. This should not happen.")
+        Utils.log(LogType.ERROR, "git-lab crashed. This should not happen.")
         print(
             "Please help us to fix it by opening an issue on",
             "https://invent.kde.org/sdk/git-lab/-/issues.",

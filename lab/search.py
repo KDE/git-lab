@@ -70,9 +70,9 @@ class Search(AllInstancesConnection):
 
                 table.add_row(
                     [
-                        TextFormatting.bold + result["path_with_namespace"] + TextFormatting.end,
+                        TextFormatting.BOLD + result["path_with_namespace"] + TextFormatting.END,
                         description,
-                        TextFormatting.underline + result["ssh_url_to_repo"] + TextFormatting.end,
+                        TextFormatting.UNDERLINE + result["ssh_url_to_repo"] + TextFormatting.END,
                     ]
                 )
 

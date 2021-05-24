@@ -119,17 +119,17 @@ class MergeRequestList(RepositoryConnection):
                 row.append(merge_request.web_url)
             else:
                 row.append(
-                    TextFormatting.bold + merge_request.references["full"] + TextFormatting.end
+                    TextFormatting.BOLD + merge_request.references["full"] + TextFormatting.END
                 )
 
             row.append(merge_request.title)
 
             if merge_request.state == "merged":
-                row.append(TextFormatting.green + merge_request.state + TextFormatting.end)
+                row.append(TextFormatting.GREEN + merge_request.state + TextFormatting.END)
             elif merge_request.state == "opened":
                 row.append(merge_request.state)
             elif merge_request.state == "closed":
-                row.append(TextFormatting.red + merge_request.state + TextFormatting.end)
+                row.append(TextFormatting.RED + merge_request.state + TextFormatting.END)
 
             table.add_row(row)
 

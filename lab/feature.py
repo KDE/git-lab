@@ -66,13 +66,13 @@ class Feature:
         try:
             if name in self.__repo.refs:
                 self.__git.checkout(name)
-                Utils.log(LogType.Info, "Switched to branch '{}'".format(name))
+                Utils.log(LogType.INFO, "Switched to branch '{}'".format(name))
             else:
                 self.__git.checkout(start, b=name)  # create a new branch
-                Utils.log(LogType.Info, "Switched to a new branch '{}'".format(name))
+                Utils.log(LogType.INFO, "Switched to a new branch '{}'".format(name))
 
         except GitCommandError as git_error:
-            Utils.log(LogType.Error, git_error.stderr.strip())
+            Utils.log(LogType.ERROR, git_error.stderr.strip())
 
     def list(self) -> None:
         """

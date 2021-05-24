@@ -41,7 +41,7 @@ class RepositoryConnection:
         try:
             origin = self._local_repo.remote(name="origin")
         except ValueError:
-            Utils.log(LogType.Error, "No origin remote exists")
+            Utils.log(LogType.ERROR, "No origin remote exists")
             sys.exit(1)
 
         repository: str = next(origin.urls)
@@ -50,12 +50,12 @@ class RepositoryConnection:
         gitlab_hostname: Optional[str] = urlparse(gitlab_url).hostname
 
         if not gitlab_hostname:
-            Utils.log(LogType.Error, "Failed to detect GitLab hostname")
+            Utils.log(LogType.ERROR, "Failed to detect GitLab hostname")
             sys.exit(1)
 
         auth_token: Optional[str] = self.__config.token(gitlab_hostname)
         if not auth_token:
-            Utils.log(LogType.Error, "No authentication token found. ")
+            Utils.log(LogType.ERROR, "No authentication token found. ")
             print(
                 "Please create a token with the api and write_repository scopes on {}/{}.".format(
                     gitlab_url, "profile/personal_access_tokens"
@@ -66,7 +66,7 @@ class RepositoryConnection:
 
         self.__login(gitlab_url, auth_token)
         if not self._connection:
-            Utils.log(LogType.Error, "Failed to connect to GitLab")
+            Utils.log(LogType.ERROR, "Failed to connect to GitLab")
             sys.exit(1)
 
         try:
@@ -74,7 +74,7 @@ class RepositoryConnection:
                 Utils.str_id_for_url(Utils.normalize_url(repository))
             )
         except (GitlabHttpError, GitlabGetError):
-            Utils.log(LogType.Error, "The repository could not be found on the GitLab instance.")
+            Utils.log(LogType.ERROR, "The repository could not be found on the GitLab instance.")
             print(
                 "If the repository was recently moved, please update the origin remote using git."
             )
@@ -85,5 +85,5 @@ class RepositoryConnection:
             self._connection: Gitlab = Gitlab(hostname, private_token=token)
             self._connection.auth()
         except (GitlabAuthenticationError, GitlabGetError):
-            Utils.log(LogType.Error, "Could not log into GitLab: {}".format(hostname))
+            Utils.log(LogType.ERROR, "Could not log into GitLab: {}".format(hostname))
             sys.exit(1)

@@ -50,7 +50,7 @@ def run(args: argparse.Namespace) -> None:
     :param args: parsed arguments
     """
     # To fork or not to fork
-    fork: bool = RepositoryConfig().workflow() == Workflow.Fork
+    fork: bool = RepositoryConfig().workflow() == Workflow.FORK
     creator: MergeRequestCreator = MergeRequestCreator(args.target_branch, fork)
     creator.check()
     creator.commit()
@@ -84,7 +84,7 @@ class MergeRequestCreator(RepositoryConnection):
         """
         if self._local_repo.active_branch.name == "master":
             Utils.log(
-                LogType.Warning,
+                LogType.WARNING,
                 "Creating merge requests from master is a bad idea.",
                 "Please check out a new a branch before creating a merge request.",
                 "To cancel, please press Ctrl + C.",
@@ -96,7 +96,7 @@ class MergeRequestCreator(RepositoryConnection):
             and "invent.kde.org" in self._connection.url
         ):
             Utils.log(
-                LogType.Warning,
+                LogType.WARNING,
                 "Pushing to the upstream repository, but the branch name doesn't start with work/.",
             )
             print(
@@ -112,7 +112,7 @@ class MergeRequestCreator(RepositoryConnection):
 
         index: IndexFile = self._local_repo.index
         if len(index.diff("HEAD")) > 0:
-            Utils.log(LogType.Info, "You have staged but uncommited changes.")
+            Utils.log(LogType.INFO, "You have staged but uncommited changes.")
             create_commit: bool = Utils.ask_bool("do you want to create a new commit?")
 
             if create_commit:
@@ -121,7 +121,7 @@ class MergeRequestCreator(RepositoryConnection):
                 try:
                     subprocess.check_call(["git", "commit"])
                 except subprocess.CalledProcessError:
-                    Utils.log(LogType.Error, "git exited with an error code")
+                    Utils.log(LogType.ERROR, "git exited with an error code")
                     sys.exit(1)
 
     def fork(self) -> None:
@@ -153,7 +153,7 @@ class MergeRequestCreator(RepositoryConnection):
             self._local_repo.create_remote("fork", url=self.__remote_fork.ssh_url_to_repo)
         except GitlabCreateError:
             Utils.log(
-                LogType.Info,
+                LogType.INFO,
                 "Fork exists, but no fork remote exists locally, trying to guess the url",
             )
             # Detect ssh url
@@ -200,14 +200,14 @@ class MergeRequestCreator(RepositoryConnection):
             image = extract_expr.findall(match)[0]
 
             if not image.startswith("http"):
-                Utils.log(LogType.Info, "Uploading", image)
+                Utils.log(LogType.INFO, "Uploading", image)
 
                 filename: str = os.path.basename(image)
                 try:
                     uploaded_file = self._remote_project.upload(filename, filepath=image)
                     output_text = output_text.replace(image, uploaded_file["url"])
                 except FileNotFoundError:
-                    Utils.log(LogType.Warning, "Failed to upload image", image)
+                    Utils.log(LogType.WARNING, "Failed to upload image", image)
                     print("The file does not exist.")
 
         return output_text
@@ -226,7 +226,7 @@ class MergeRequestCreator(RepositoryConnection):
         if len(mrs) > 0:
             merge_request = mrs[0]
             Utils.log(
-                LogType.Info,
+                LogType.INFO,
                 'Updating existing merge request "{}" at: {}'.format(
                     merge_request.title, merge_request.web_url
                 ),
@@ -253,4 +253,4 @@ class MergeRequestCreator(RepositoryConnection):
                 "remove_source_branch": True,
             }
         )
-        Utils.log(LogType.Info, "Created merge request at", merge_request.web_url)
+        Utils.log(LogType.INFO, "Created merge request at", merge_request.web_url)
