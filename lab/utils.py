@@ -20,6 +20,19 @@ from git import Repo
 from git.exc import InvalidGitRepositoryError
 
 
+def removesuffix(string: str, suffix: str) -> str:
+    """
+    Compatiblity function for python < 3.9
+    """
+    if sys.version_info >= (3, 9):
+        return string.removesuffix(suffix)
+
+    if string.endswith(suffix):
+        return string[: -len(suffix)]
+
+    return string
+
+
 class LogType(Enum):
     """
     Enum representing the type of log message
@@ -59,8 +72,8 @@ class Utils:
         Returns the url encoded string id for a repository
         """
         normalized_url: str = Utils.normalize_url(url)
-        normalized_url = normalized_url.removesuffix(".git")
-        normalized_url = normalized_url.removesuffix("/")
+        normalized_url = removesuffix(normalized_url, ".git")
+        normalized_url = removesuffix(normalized_url, "/")
 
         repository_url: ParseResult = urlparse(normalized_url)
         return quote_plus(repository_url.path[1:])
