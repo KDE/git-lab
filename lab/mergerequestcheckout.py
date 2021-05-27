@@ -13,6 +13,7 @@ from gitlab.v4.objects import ProjectMergeRequest
 
 from lab.repositoryconnection import RepositoryConnection
 from lab.utils import Utils
+from lab.utils import LogType
 
 
 def parser(
@@ -79,7 +80,22 @@ class MergeRequestCheckout(RepositoryConnection):
                 print("Aborting")
                 sys.exit(1)
 
-            self._local_repo.refs.master.checkout()
+            # If the branch that we want to overwrite is currently checked out,
+            # that will of course not work, so try to switch to another branch in the meantime.
+            if self.__mr.source_branch == self._local_repo.head.reference.name:
+                if "main" in self._local_repo.refs:
+                    self._local_repo.refs.main.checkout()
+                elif "master" in self._local_repo.refs:
+                    self._local_repo.refs.master.checkout()
+                else:
+                    Utils.log(
+                        LogType.ERROR,
+                        "The branch that you want to overwrite is currently checked out \
+                        and no other branch to temporarily switch to could be found. Please check out \
+                        a different branch and try again.",
+                    )
+                    sys.exit(1)
+
             self._local_repo.delete_head(self.__mr.source_branch, "-f")
 
         head = self._local_repo.create_head(self.__mr.source_branch, fetch_info.ref)
