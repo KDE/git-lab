@@ -90,7 +90,7 @@ class PipelineStatus(Enum):
 
 
 def parser(
-        subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
+    subparsers: argparse._SubParsersAction,  # pylint: disable=protected-access
 ) -> argparse.ArgumentParser:
     """
     Subparser for pipeline command
@@ -169,16 +169,16 @@ class PipelineShow(RepositoryConnection):
 
         text_buffer: str = ""
         text_buffer += (
-                f"Pipeline {TextFormatting.BOLD}#{self.pipeline.id}"
-                + f"{TextFormatting.END} for {self.pipeline.ref} "
-                + f"triggered by {self.pipeline.user['name']}({self.pipeline.user['username']}) "
-                + f"{Utils.pretty_date(self.pipeline.created_at)} "
+            f"Pipeline {TextFormatting.BOLD}#{self.pipeline.id}"
+            + f"{TextFormatting.END} for {self.pipeline.ref} "
+            + f"triggered by {self.pipeline.user['name']}({self.pipeline.user['username']}) "
+            + f"{Utils.pretty_date(self.pipeline.created_at)} "
         )
 
         if status.finished:
             text_buffer += (
-                    f"finished after {Utils.pretty_time_delta(self.pipeline.duration or 0)} "
-                    + f"with status: {status.formatted}"
+                f"finished after {Utils.pretty_time_delta(self.pipeline.duration or 0)} "
+                + f"with status: {status.formatted}"
             )
         else:
             text_buffer += f"is currently {status.formatted}"
