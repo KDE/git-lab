@@ -69,14 +69,14 @@ class Utils:
     @staticmethod
     def str_id_for_url(url: str) -> str:
         """
-        Returns the url encoded string id for a repository
+        Returns the unencoded string id for a repository
         """
         normalized_url: str = Utils.normalize_url(url)
         normalized_url = removesuffix(normalized_url, ".git")
         normalized_url = removesuffix(normalized_url, "/")
 
         repository_url: ParseResult = urlparse(normalized_url)
-        return quote_plus(repository_url.path[1:], safe='/')
+        return repository_url.path[1:]
 
     @staticmethod
     def log(log_type: LogType, *message: str) -> None:
