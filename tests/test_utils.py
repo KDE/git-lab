@@ -42,7 +42,12 @@ class UtilsTest(unittest.TestCase):
 
         str_id: str = Utils.str_id_for_url(url)
 
-        self.assertEqual(str_id, "KDE%2Fkaidan")
+        self.assertEqual(str_id, "KDE/kaidan")
+
+        # This is not a valid repository name for KDE invent, though
+        url = "ssh://git@invent.kde.org/KDE/kaidan%.git"
+        str_id = Utils.str_id_for_url(url)
+        self.assertEqual(str_id, "KDE/kaidan%")
 
     def test_ssh_url_from_http(self):
         url: str = "http://invent.kde.org/KDE/kaidan"
