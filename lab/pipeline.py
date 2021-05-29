@@ -1,6 +1,11 @@
 """
 This module contains code for the pipeline command
 """
+
+# SPDX-FileCopyrightText: 2021 Leon Morten Richter <github@leonmortenrichter.de>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 import argparse
 import os
 import sys
