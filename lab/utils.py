@@ -2,19 +2,19 @@
 Module containing classes for common tasks
 """
 
+import os
+import shlex
+
 # SPDX-FileCopyrightText: 2020 Jonah Brüchert <jbb@kaidan.im>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 import shutil
 import subprocess
-
 import sys
-import os
-import shlex
-from typing import List, Optional, Final
-
-from urllib.parse import ParseResult, urlparse, quote_plus
+from datetime import datetime, timezone
 from enum import Enum, auto
+from typing import List, Optional, Final
+from urllib.parse import ParseResult, urlparse, quote_plus
 
 from git import Repo
 from git.exc import InvalidGitRepositoryError
@@ -233,3 +233,64 @@ class Utils:
             return None
 
         return Utils.find_dotgit(parent_dir)
+
+    @staticmethod
+    def pretty_date(date_string: str, now: datetime = datetime.now(timezone.utc)) -> str:
+        """Transform an ISO-8601 date-string and transform it into a human readable format.
+        Taken almost verbatim from:
+            https://stackoverflow.com/questions/1551382/user-friendly-time-format-in-python
+        """
+        time = datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%S.%fZ")
+        try:
+            diff = now - time
+        except TypeError:
+            # We most likely tried to subtract an offset-naive and  an offset-aware date
+            now = now.replace(tzinfo=None)
+            time = time.replace(tzinfo=None)
+            diff = now - time
+
+        second_diff = diff.seconds
+        day_diff = diff.days
+
+        if day_diff < 0:
+            return ""
+
+        if day_diff == 0:
+            if second_diff < 10:
+                return "just now"
+            if second_diff < 60:
+                return str(second_diff) + " seconds ago"
+            if second_diff < 120:
+                return "a minute ago"
+            if second_diff < 3600:
+                return str(second_diff // 60) + " minutes ago"
+            if second_diff < 7200:
+                return "an hour ago"
+            if second_diff < 86400:
+                return str(second_diff // 3600) + " hours ago"
+        if day_diff == 1:
+            return "Yesterday"
+        if day_diff < 7:
+            return str(day_diff) + " days ago"
+        if day_diff < 31:
+            return str(day_diff // 7) + " weeks ago"
+        if day_diff < 365:
+            return str(day_diff // 30) + " months ago"
+        return str(day_diff // 365) + " years ago"
+
+    @staticmethod
+    def pretty_time_delta(seconds: int = 0) -> str:
+        """
+        Pretty print a given timedelta in seconds human readable.
+        """
+        seconds = abs(seconds)  # Make seconds unsigned
+        days, seconds = divmod(seconds, 86400)
+        hours, seconds = divmod(seconds, 3600)
+        minutes, seconds = divmod(seconds, 60)
+        if days:
+            return "%dd %dh %dm %ds" % (days, hours, minutes, seconds)
+        if hours:
+            return "%dh %dm %ds" % (hours, minutes, seconds)
+        if minutes:
+            return "%dm %ds" % (minutes, seconds)
+        return "%ds" % (seconds,)

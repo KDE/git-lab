@@ -10,7 +10,6 @@ Base module for the lab package
 
 import argparse
 import traceback
-
 from typing import List, Any
 
 from git.exc import GitCommandError
@@ -22,13 +21,13 @@ from lab import (
     feature,
     login,
     search,
+    pipeline,
     fork,
     issues,
     snippet,
     workflow,
     rewrite_remote,
 )
-
 from lab.utils import Utils, LogType
 
 
@@ -49,6 +48,7 @@ class Parser:  # pylint: disable=R0903
             feature,
             login,
             search,
+            pipeline,
             fork,
             issues,
             snippet,
