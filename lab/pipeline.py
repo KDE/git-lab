@@ -7,7 +7,6 @@ import sys
 from enum import Enum
 from typing import List, Optional, Dict
 
-from git import Repo
 from gitlab.exceptions import GitlabGetError
 from gitlab.v4.objects import ProjectPipeline
 
@@ -193,17 +192,13 @@ class PipelineList(RepositoryConnection):
     Search class
     """
 
-    # private
-    __repo: Repo
-
     def __init__(self, status: Optional[PipelineStatus] = None, ref: Optional[str] = None) -> None:
         RepositoryConnection.__init__(self)
-        self.__repo = Utils.get_cwd_repo()
 
         self.status: Optional[PipelineStatus] = status
         self.ref: Optional[str] = ref
 
-        if ref is not None and ref not in self.__repo.refs:
+        if ref is not None and ref not in self._local_repo.refs:
             # Print a warning, if the ref is not found LOCALLY
             # The remote may contain refs, that do not exists inside the local copy,
             # therefore only a warning is printed.
