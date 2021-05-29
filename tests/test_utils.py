@@ -61,7 +61,7 @@ class UtilsTest(unittest.TestCase):
 
         str_id: str = Utils.str_id_for_url(url)
 
-        self.assertEqual(str_id, "network%2Fkaidan")
+        self.assertEqual(str_id, "network/kaidan")
 
     def test_pretty_date(self) -> None:
         ref_date = datetime(2020, 1, 1)
