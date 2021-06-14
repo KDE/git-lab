@@ -103,7 +103,7 @@ def parser(
     :return: search subparser
     """
     pipeline_parser: argparse.ArgumentParser = subparsers.add_parser(
-        "pipeline", help="Fetch pipeline status from GitLab."
+        "pipelines", help="Fetch pipeline status from GitLab."
     )
 
     # Optionally filter by status. This is None by default.
