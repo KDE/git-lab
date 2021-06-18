@@ -70,11 +70,12 @@ class RepositoryConnection:
             sys.exit(1)
 
         try:
-            self._remote_project = self._connection.projects.get(
-                Utils.str_id_for_url(repository)
-            )
+            self._remote_project = self._connection.projects.get(Utils.str_id_for_url(repository))
         except (GitlabHttpError, GitlabGetError):
-            Utils.log(LogType.ERROR, "The repository could not be found on the GitLab instance.")
+            Utils.log(
+                LogType.ERROR,
+                "The repository could not be found on the GitLab instance.",
+            )
             print(
                 "If the repository was recently moved, please update the origin remote using git."
             )
