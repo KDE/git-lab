@@ -57,7 +57,7 @@ class RepositoryConnection:
         if not auth_token:
             Utils.log(LogType.ERROR, "No authentication token found. ")
             print(
-                "Please create a token with the api and write_repository scopes on {}/{}.".format(
+                "Please create a token with the api and write_repository scopes on {}/-/{}.".format(
                     gitlab_url, "profile/personal_access_tokens"
                 )
             )
