@@ -14,7 +14,7 @@ import sys
 from datetime import datetime, timezone
 from enum import Enum, auto
 from typing import List, Optional, Final
-from urllib.parse import ParseResult, urlparse, quote_plus
+from urllib.parse import ParseResult, urlparse
 
 from git import Repo
 from git.exc import InvalidGitRepositoryError
