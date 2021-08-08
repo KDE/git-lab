@@ -45,6 +45,14 @@ class RepositoryConnection:
             sys.exit(1)
 
         repository: str = next(origin.urls)
+        if repository.startswith("http"):
+            Utils.log(
+                LogType.INFO,
+                "Found http remote, if you want to switch this "
+                + "repository to ssh, run `git lab rewrite-remote "
+                + "origin`",
+            )
+            print()
 
         gitlab_url = Utils.gitlab_instance_url(repository)
         gitlab_hostname: Optional[str] = urlparse(gitlab_url).hostname
