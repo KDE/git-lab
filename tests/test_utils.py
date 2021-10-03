@@ -9,6 +9,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../")
 
 from lab.utils import Utils
 from lab.pipelines import PipelineStatus
+from lab.issue import is_valid_time_str
 
 
 class UtilsTest(unittest.TestCase):
@@ -147,6 +148,31 @@ class PipelineTest(unittest.TestCase):
         self.assertTrue(PipelineStatus.FAILED.finished)
         self.assertTrue(PipelineStatus.CANCELED.finished)
         self.assertTrue(PipelineStatus.SKIPPED.finished)
+
+
+class TestTimeTracking(unittest.TestCase):
+
+    def test_regex(self):
+        self.assertTrue(is_valid_time_str("1mo2w4d10h2m"))
+        self.assertTrue(is_valid_time_str("2w4d10h2m"))
+        self.assertTrue(is_valid_time_str("4d10h2m"))
+        self.assertTrue(is_valid_time_str("10h2m"))
+        self.assertTrue(is_valid_time_str("2m"))
+        self.assertTrue(is_valid_time_str("10m"))
+        self.assertTrue(is_valid_time_str("12h"))
+        self.assertTrue(is_valid_time_str("5d"))
+        self.assertTrue(is_valid_time_str("10w"))
+        self.assertTrue(is_valid_time_str("8m"))
+
+        self.assertFalse(is_valid_time_str("w"))
+        self.assertFalse(is_valid_time_str("mo"))
+        self.assertFalse(is_valid_time_str("d"))
+        self.assertFalse(is_valid_time_str("h"))
+        self.assertFalse(is_valid_time_str("m"))
+        self.assertFalse(is_valid_time_str("100"))
+        self.assertFalse(is_valid_time_str("100p"))
+        self.assertFalse(is_valid_time_str("100wof"))
+        self.assertFalse(is_valid_time_str("bar1foo"))
 
 
 if __name__ == "__main__":

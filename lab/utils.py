@@ -3,6 +3,7 @@ Module containing classes for common tasks
 """
 
 import os
+import re
 import shlex
 
 # SPDX-FileCopyrightText: 2020 Jonah Brüchert <jbb@kaidan.im>
@@ -18,6 +19,16 @@ from urllib.parse import ParseResult, urlparse
 
 from git import Repo
 from git.exc import InvalidGitRepositoryError
+
+TIME_STR_REGEX = r"^([0-9]+mo)?([0-9]+w)?([0-9]+d)?([0-9]+h)?([0-9]+m)?$"
+
+
+def is_valid_time_str(time_str: str) -> bool:
+    """
+    Returns True if a given string matches the time tracking convention of Gitlab.
+    See: https://docs.gitlab.com/ee/user/project/time_tracking.html
+    """
+    return bool(re.match(TIME_STR_REGEX, time_str))
 
 
 def removesuffix(string: str, suffix: str) -> str:
@@ -59,6 +70,14 @@ class TextFormatting:  # pylint: disable=too-few-public-methods
     BOLD: Final[str] = "\033[1m"
     UNDERLINE: Final[str] = "\033[4m"
     END: Final[str] = "\033[0m"
+
+    @staticmethod
+    def red(s: str) -> str:
+        return f"{TextFormatting.RED}{s}{TextFormatting.END}"
+
+    @staticmethod
+    def green(s: str) -> str:
+        return f"{TextFormatting.GREEN}{s}{TextFormatting.END}"
 
 
 class Utils:
