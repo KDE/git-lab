@@ -32,19 +32,33 @@ def parser(
     )
 
     estimate_parser = issue_subparsers.add_parser("estimate")
-    spend_parser = issue_subparsers.add_parser("spend")
+    estimate_parser_group = estimate_parser.add_mutually_exclusive_group()
 
-    estimate_parser.add_argument(
+    spend_parser = issue_subparsers.add_parser("spend")
+    spend_parser_group = spend_parser.add_mutually_exclusive_group()
+
+    estimate_parser_group.add_argument(
         "--update",
-        help="Update estimated time (override). E.g. '2d4h'",
+        help="Update estimated time (override). E.g. '2d4h'.",
         metavar="time_str",
         type=str,
     )
-    spend_parser.add_argument(
+    estimate_parser_group.add_argument(
+        "--reset",
+        help="Reset a time estimate for an issue.",
+        action="store_true",
+    )
+
+    spend_parser_group.add_argument(
         "--update",
-        help="Add new time entry (time spent). E.g. '5h30m'",
+        help="Add new time entry (time spent). E.g. '5h30m'.",
         metavar="time_str",
         type=str,
+    )
+    spend_parser_group.add_argument(
+        "--reset",
+        help="Reset spent time for an issue.",
+        action="store_true",
     )
 
     return issue_parser
@@ -59,13 +73,15 @@ def run(args: argparse.Namespace) -> None:
     if args.command == "estimate":
         if args.update:
             issue.update_estimated(args.update)
-            print(TextFormatting.green(f"Set estimate to {args.update}"))
+        elif args.reset:
+            issue.reset_time_estimate()
         else:
             issue.print_estimated()
     elif args.command == "spend":
         if args.update:
             issue.update_spent(args.update)
-            print(TextFormatting.green(f"Added time entry of {args.update}"))
+        elif args.reset:
+            issue.reset_spent_time()
         else:
             issue.print_spent()
 
@@ -114,6 +130,7 @@ class IssueConnection(RepositoryConnection):
 
         self.issue.time_estimate(time_str)
         self.issue.save()
+        print(TextFormatting.green(f"Set estimate to {time_str}"))
 
     def print_spent(self) -> None:
         """Prints a short info about the total time spent on this issue."""
@@ -136,3 +153,14 @@ class IssueConnection(RepositoryConnection):
 
         self.issue.add_spent_time(time_str)
         self.issue.save()
+        print(TextFormatting.green(f"Added time entry of {time_str}"))
+
+    def reset_time_estimate(self) -> None:
+        """Reset time estimate on an issue"""
+        self.issue.reset_time_estimate()
+        print(TextFormatting.green(f"Time estimate reset."))
+
+    def reset_spent_time(self) -> None:
+        """Rest time spent on an issue"""
+        self.issue.reset_spent_time()
+        print(TextFormatting.green(f"Spent time reset."))
