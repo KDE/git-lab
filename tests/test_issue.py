@@ -1,6 +1,10 @@
+import sys
+import os
 import unittest
 from io import StringIO
 from unittest.mock import MagicMock, patch
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../")
 
 from lab.issue import IssueConnection
 
