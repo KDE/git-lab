@@ -39,7 +39,7 @@ def parser(
     create_parser.add_argument(
         "--target-branch",
         help="Use different target branch than master",
-        default="master",
+        default=Utils.get_default_branch(Utils.get_cwd_repo()),
     )
     return create_parser
 
