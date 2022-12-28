@@ -313,3 +313,7 @@ class Utils:
         if minutes:
             return "%dm %ds" % (minutes, seconds)
         return "%ds" % (seconds,)
+
+    @staticmethod
+    def get_default_branch(repo: Repo) -> str:
+        return repo.remotes.origin.refs["HEAD"].ref.remote_head
