@@ -10,10 +10,17 @@ import argparse
 import sys
 
 from gitlab.v4.objects import ProjectMergeRequest
+from gitlab.v4.objects import Project
+from gitlab.exceptions import GitlabHttpError, GitlabGetError
+
+from git.remote import Remote
+from git.refs.reference import Reference
 
 from lab.repositoryconnection import RepositoryConnection
 from lab.utils import Utils
 from lab.utils import LogType
+
+from typing import Optional
 
 
 def parser(
@@ -57,6 +64,38 @@ class MergeRequestCheckout(RepositoryConnection):
     def __init__(self) -> None:
         RepositoryConnection.__init__(self)
 
+
+    def add_remote(self) -> Optional[Reference]:
+        fork_project: Project
+        try:
+            fork_project = self._connection.projects.get(self.__mr.source_project_id)
+        except (GitlabHttpError, GitlabGetError):
+            Utils.log(
+                LogType.ERROR,
+                "The source repository of this merge request could not be found on the GitLab instance.",
+            )
+            sys.exit(1)
+
+        remote_url: str = fork_project.ssh_url_to_repo
+        user: str = self.__mr.author["username"]
+        remote_name = f"fork-{user}"
+
+        remote: Remote
+        if remote_name not in self._local_repo.remotes:
+            remote = Remote.add(self._local_repo, remote_name, remote_url)
+        else:
+            remote = self._local_repo.remotes[remote_name]
+
+        remote.fetch()
+
+        for ref in remote.refs:
+            if ref.name == f"{remote_name}/{self.__mr.source_branch}":
+                return ref
+
+        Utils.log(LogType.ERROR, "Failed to find remote ref")
+        sys.exit(1)
+
+
     def checkout(self, merge_request_id: int) -> None:
         """
         Checks out the merge request with the specified id in the local worktree
@@ -65,9 +104,8 @@ class MergeRequestCheckout(RepositoryConnection):
         print('Checking out merge request "{}"...'.format(self.__mr.title))
         print("  branch:", self.__mr.source_branch)
 
-        fetch_info = self._local_repo.remotes.origin.fetch(
-            "merge-requests/{}/head".format(merge_request_id)
-        )[0]
+        remote_ref = self.add_remote()
+
         if self.__mr.source_branch in self._local_repo.refs:
             # Make sure not to overwrite local changes
             overwrite = Utils.ask_bool(
@@ -98,5 +136,6 @@ class MergeRequestCheckout(RepositoryConnection):
 
             self._local_repo.delete_head(self.__mr.source_branch, "-f")
 
-        head = self._local_repo.create_head(self.__mr.source_branch, fetch_info.ref)
+        head = self._local_repo.create_head(self.__mr.source_branch, remote_ref)
         head.checkout()
+        self._local_repo.active_branch.set_tracking_branch(remote_ref)
