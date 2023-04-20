@@ -316,4 +316,7 @@ class Utils:
 
     @staticmethod
     def get_default_branch(repo: Repo) -> str:
-        return repo.remotes.origin.refs["HEAD"].ref.remote_head
+        try:
+            return repo.remotes.origin.refs["HEAD"].ref.remote_head
+        except:
+            return "master"
