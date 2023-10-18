@@ -44,7 +44,7 @@ def parser(
     create_parser.add_argument(
         "--noninteractive",
         help="Don't ask any interactive questions",
-        default=False
+        action='store_true'
     )
     return create_parser
 
