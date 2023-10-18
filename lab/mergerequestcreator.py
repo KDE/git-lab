@@ -41,6 +41,11 @@ def parser(
         help="Use different target branch than master",
         default=Utils.get_default_branch(Utils.get_cwd_repo()),
     )
+    create_parser.add_argument(
+        "--noninteractive",
+        help="Don't ask any interactive questions",
+        default=False
+    )
     return create_parser
 
 
@@ -59,7 +64,7 @@ def run(args: argparse.Namespace) -> None:
         creator.fork()
 
     creator.push()
-    creator.create_mr()
+    creator.create_mr(args.noninteractive)
 
 
 class MergeRequestCreator(RepositoryConnection):
@@ -212,7 +217,7 @@ class MergeRequestCreator(RepositoryConnection):
 
         return output_text
 
-    def create_mr(self) -> None:
+    def create_mr(self, noninteractive: bool) -> None:
         """
         Creates a merge request with the changes from the current branch
         """
@@ -233,12 +238,18 @@ class MergeRequestCreator(RepositoryConnection):
             )
             return
 
-        e_input = EditorInput(
-            placeholder_title=self._local_repo.head.commit.summary,
-            placeholder_body=self._local_repo.head.commit.message.split("\n", 1)[1].strip(),
-            extra_text="The markdown syntax for embedding images "
-            + "![description](/path/to/file) can be used to upload images.",
-        )
+        title: str = self._local_repo.head.commit.summary
+        body: str = self._local_repo.head.commit.message.split("\n", 1)[1].strip()
+
+        if not noninteractive:
+            e_input = EditorInput(
+                placeholder_title=self._local_repo.head.commit.summary,
+                placeholder_body=self._local_repo.head.commit.message.split("\n", 1)[1].strip(),
+                extra_text="The markdown syntax for embedding images "
+                + "![description](/path/to/file) can be used to upload images.",
+            )
+            title = e_input.title
+            body = self.__upload_assets(e_input.body)
 
         project: Project = self.__remote_fork if self.__fork else self._remote_project
 
@@ -246,8 +257,8 @@ class MergeRequestCreator(RepositoryConnection):
             {
                 "source_branch": self._local_repo.active_branch.name,
                 "target_branch": self.__target_branch,
-                "title": e_input.title,
-                "description": self.__upload_assets(e_input.body),
+                "title": title,
+                "description": body,
                 "target_project_id": self._remote_project.id,
                 "allow_maintainer_to_push": True,
                 "remove_source_branch": True,
