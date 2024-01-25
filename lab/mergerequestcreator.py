@@ -11,6 +11,7 @@ import re
 import os
 import subprocess
 import sys
+import time
 
 from typing import List, Any
 
@@ -94,6 +95,8 @@ class MergeRequestCreator(RepositoryConnection):
                 "Please check out a new a branch before creating a merge request.",
                 "To cancel, please press Ctrl + C.",
             )
+            Utils.log(LogType.INFO, "Waiting for 10 seconds before continuing")
+            time.sleep(10)
 
         if (
             not self._local_repo.active_branch.name.startswith("work/")
@@ -109,6 +112,8 @@ class MergeRequestCreator(RepositoryConnection):
                 "as it doesn't allow to rebase or force-push the branch.",
                 "To cancel, please press Ctrl + C.",
             )
+            Utils.log(LogType.INFO, "Waiting for 10 seconds before continuing")
+            time.sleep(10)
 
     def commit(self) -> None:
         """
