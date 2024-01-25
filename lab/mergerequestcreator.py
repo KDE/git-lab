@@ -43,9 +43,7 @@ def parser(
         default=Utils.get_default_branch(Utils.get_cwd_repo()),
     )
     create_parser.add_argument(
-        "--noninteractive",
-        help="Don't ask any interactive questions",
-        action='store_true'
+        "--noninteractive", help="Don't ask any interactive questions", action="store_true"
     )
     return create_parser
 

@@ -29,7 +29,10 @@ def parser(
     )
     feature_parser.add_argument("name", nargs="?", help="name for the new branch")
     feature_parser.add_argument(
-        "start", nargs="?", help="starting point for the new branch", default="origin/" + Utils.get_default_branch(Utils.get_cwd_repo())
+        "start",
+        nargs="?",
+        help="starting point for the new branch",
+        default="origin/" + Utils.get_default_branch(Utils.get_cwd_repo()),
     )
     return feature_parser
 

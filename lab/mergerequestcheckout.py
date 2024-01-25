@@ -64,7 +64,6 @@ class MergeRequestCheckout(RepositoryConnection):
     def __init__(self) -> None:
         RepositoryConnection.__init__(self)
 
-
     def add_remote(self) -> Optional[Reference]:
         fork_project: Project
         try:
@@ -94,7 +93,6 @@ class MergeRequestCheckout(RepositoryConnection):
 
         Utils.log(LogType.ERROR, "Failed to find remote ref")
         sys.exit(1)
-
 
     def checkout(self, merge_request_id: int) -> None:
         """
