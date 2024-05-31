@@ -125,6 +125,7 @@ class Utils:
 
         Example: git@invent.kde.org:KDE/kaidan becomes ssh://git@invent.kde.org/KDE/kaidan
         """
+        url = url.strip("/")
         result = urlparse(url)
 
         # url is already fine

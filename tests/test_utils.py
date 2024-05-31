@@ -38,6 +38,10 @@ class UtilsTest(unittest.TestCase):
         url = Utils.normalize_url(http_url)
         self.assertEqual(url, "https://invent.kde.org/KDE/kaidan.git")
 
+        http_url: str = "https://invent.kde.org/KDE/kaidan.git/"
+        url = Utils.normalize_url(http_url)
+        self.assertEqual(url, "https://invent.kde.org/KDE/kaidan.git")
+
     def test_str_id_for_url(self):
         url: str = "ssh://git@invent.kde.org/KDE/kaidan.git"
 
